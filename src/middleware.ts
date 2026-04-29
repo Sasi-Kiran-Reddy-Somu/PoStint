@@ -1,9 +1,8 @@
-import { auth } from "@/auth";
-import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const session = req.auth;
 
   // Public paths — always allowed
   if (
@@ -21,6 +20,9 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  const role = token?.role as string | undefined;
+
   // Worker routes — require worker role
   if (
     pathname.startsWith("/dashboard") || pathname.startsWith("/tasks") ||
@@ -28,7 +30,7 @@ export default auth((req) => {
     pathname.startsWith("/history") || pathname.startsWith("/settings") ||
     pathname.startsWith("/notifications")
   ) {
-    if (!session || session.user.role !== "worker") {
+    if (role !== "worker") {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     return NextResponse.next();
@@ -36,7 +38,7 @@ export default auth((req) => {
 
   // Ops routes — require ops role
   if (pathname.startsWith("/ops")) {
-    if (!session || session.user.role !== "ops") {
+    if (role !== "ops") {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     return NextResponse.next();
@@ -44,7 +46,7 @@ export default auth((req) => {
 
   // Worker API routes
   if (pathname.startsWith("/api/worker")) {
-    if (!session || session.user.role !== "worker") {
+    if (role !== "worker") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return NextResponse.next();
@@ -52,14 +54,14 @@ export default auth((req) => {
 
   // Ops API routes
   if (pathname.startsWith("/api/ops")) {
-    if (!session || session.user.role !== "ops") {
+    if (role !== "ops") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return NextResponse.next();
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
