@@ -1,11 +1,11 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { emailQueue } from "@/lib/queue/queues";
 
 export const tierPromotionWorker = new Worker(
   "tier-promotion",
-  async (_job: Job) => {
+  async () => {
     const threshold = await prisma.platformConfig.findUnique({
       where: { key: "tier_2_karma_threshold" },
     });

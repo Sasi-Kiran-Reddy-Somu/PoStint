@@ -1,4 +1,4 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 
@@ -17,7 +17,7 @@ function severity(workerCount: number, hasWithdrawal: boolean): "low" | "medium"
 
 export const ipOverlapWorker = new Worker(
   "ip-overlap",
-  async (_job: Job) => {
+  async () => {
     const cutoff = new Date(Date.now() - 24 * 3600_000);
 
     const events = await prisma.workerIpEvent.findMany({

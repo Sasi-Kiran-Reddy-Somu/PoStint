@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verificationQueue } from "@/lib/queue";
 import { logIpEvent, getClientIp } from "@/lib/ip-logger";
 import { T3_VERIFICATION_HOURS, BRAND_COOLDOWN_DAYS } from "@/lib/utils";
-import { logHealthEvent } from "@/lib/account-health";
+
 import { z } from "zod";
 
 const GRACE_SECONDS = 5;
@@ -16,7 +16,7 @@ const submitSchema = z.object({
   assignmentId: z.string(),
 });
 
-export async function POST(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || session.user.role !== "worker") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

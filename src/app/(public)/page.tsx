@@ -107,7 +107,7 @@ export default function LandingPage() {
         <h2 className="text-4xl font-bold mb-4">Ready to earn?</h2>
         <p className="text-slate-400 mb-8 text-lg">Join hundreds of Redditors monetizing their established accounts.</p>
         <Link href="/apply">
-          <Button size="lg" className="bg-red-600 hover:bg-red-500 text-lg px-10">Apply Now — It's Free</Button>
+          <Button size="lg" className="bg-red-600 hover:bg-red-500 text-lg px-10">Apply Now — It&apos;s Free</Button>
         </Link>
       </section>
 

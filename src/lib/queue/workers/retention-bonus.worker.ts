@@ -1,10 +1,10 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 
 export const retentionBonusWorker = new Worker(
   "retention-bonus",
-  async (_job: Job) => {
+  async () => {
     const milestoneConfig = await prisma.platformConfig.findUnique({
       where: { key: "retention_milestone_months" },
     });

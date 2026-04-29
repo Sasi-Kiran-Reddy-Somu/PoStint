@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(req: NextRequest, { params }: { params: { disputeId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ disputeId: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== "ops") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -14,15 +14,17 @@ export async function POST(req: NextRequest, { params }: { params: { disputeId: 
 
   if (!body.notes) return NextResponse.json({ error: "Notes required" }, { status: 400 });
 
+  const { disputeId } = await params;
+
   const dispute = await prisma.dispute.findUnique({
-    where: { id: params.disputeId },
+    where: { id: disputeId },
     include: { taskAssignment: { include: { task: true } } },
   });
   if (!dispute) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await prisma.$transaction(async (tx) => {
     await tx.dispute.update({
-      where: { id: params.disputeId },
+      where: { id: disputeId },
       data: {
         status: "resolved",
         resolution: body.resolution,
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest, { params }: { params: { disputeId: 
         actionType: "resolve_dispute",
         reason: body.resolution,
         notes: body.notes,
-        metadata: { disputeId: params.disputeId, creditsPaid: body.creditsPaid },
+        metadata: { disputeId: disputeId, creditsPaid: body.creditsPaid },
       },
     });
 

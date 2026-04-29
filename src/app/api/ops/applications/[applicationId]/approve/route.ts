@@ -6,13 +6,13 @@ import bcrypt from "bcryptjs";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-export async function POST(req: NextRequest, { params }: { params: { applicationId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ applicationId: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== "ops") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { applicationId } = params;
+  const { applicationId } = await params;
   const body = await req.json() as { notes?: string };
 
   const application = await prisma.application.findUnique({ where: { id: applicationId } });

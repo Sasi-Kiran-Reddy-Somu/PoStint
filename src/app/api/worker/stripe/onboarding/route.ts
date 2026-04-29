@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   const session = await auth();
   if (!session || session.user.role !== "worker") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -1,4 +1,4 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { recalcHealthScore } from "@/lib/account-health";
@@ -7,7 +7,7 @@ import { emailQueue } from "@/lib/queue/queues";
 export function startTaskExpiryWorker() {
   const worker = new Worker(
     "task-expiry",
-    async (_job: Job) => {
+    async () => {
       const now = new Date();
 
       const expired = await prisma.taskAssignment.findMany({

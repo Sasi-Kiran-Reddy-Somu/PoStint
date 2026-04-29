@@ -4,14 +4,14 @@ import { prisma } from "@/lib/prisma";
 import { logIpEvent, getClientIp } from "@/lib/ip-logger";
 import { SUBMIT_WINDOW_SECONDS } from "@/lib/utils";
 
-export async function POST(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ taskId: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== "worker") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const workerId = session.user.id;
-  const { taskId } = params;
+  const { taskId } = await params;
   const ip = getClientIp(req);
 
   const worker = await prisma.worker.findUnique({ where: { id: workerId } });

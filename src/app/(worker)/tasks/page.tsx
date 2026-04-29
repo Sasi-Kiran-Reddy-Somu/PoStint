@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { creditsToUsd } from "@/lib/utils";
 import { Clock } from "lucide-react";
 
@@ -29,14 +28,13 @@ export default function TasksPage() {
   const [capReached, setCapReached] = useState(false);
   const [dailyCap, setDailyCap] = useState(1);
   const [claimed, setClaimed] = useState(0);
-  const [sort, setSort] = useState<"random" | "credits" | "expiring">("random");
   const [typeFilter, setTypeFilter] = useState<"all" | "comment" | "upvote" | "post">("all");
   const [tier, setTier] = useState<string>("tier_1");
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch(`/api/worker/tasks?sort=${sort}&type=${typeFilter}`);
+      const res = await fetch(`/api/worker/tasks?sort=random&type=${typeFilter}`);
       const data = await res.json();
       setTasks(data.tasks ?? []);
       setCapReached(data.capReached ?? false);
@@ -47,11 +45,13 @@ export default function TasksPage() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchTasks(); }, [sort, typeFilter]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchTasks(); }, [typeFilter]);
   useEffect(() => {
     const t = setInterval(fetchTasks, 30000);
     return () => clearInterval(t);
-  }, [sort, typeFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter]);
 
   const briefPreview = (brief: Task["brief"]): string => {
     if (typeof brief === "string") return brief.slice(0, 120);
@@ -101,17 +101,6 @@ export default function TasksPage() {
             ))}
           </div>
 
-          {/* Sort */}
-          <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
-            <SelectTrigger className="w-44 bg-slate-900 border-slate-800 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="random">Random order</SelectItem>
-              <SelectItem value="credits">Highest credits first</SelectItem>
-              <SelectItem value="expiring">Expiring soonest</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 

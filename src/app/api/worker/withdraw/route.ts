@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { isBannedIp, getClientIp, logIpEvent } from "@/lib/ip-logger";
-import { emailQueue } from "@/lib/queue";
 import { WITHDRAWAL_THRESHOLD_CREDITS, CREDITS_PER_DOLLAR } from "@/lib/utils";
 import { z } from "zod";
 

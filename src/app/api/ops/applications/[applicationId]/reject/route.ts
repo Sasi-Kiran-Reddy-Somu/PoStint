@@ -3,13 +3,13 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { emailQueue } from "@/lib/queue";
 
-export async function POST(req: NextRequest, { params }: { params: { applicationId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ applicationId: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== "ops") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { applicationId } = params;
+  const { applicationId } = await params;
   const body = await req.json() as { rejectionCategory: string; notes?: string };
 
   const application = await prisma.application.findUnique({ where: { id: applicationId } });

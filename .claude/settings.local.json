@@ -12,7 +12,20 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/ops/vetting)",
       "Bash(npx tsx *)",
       "Bash(git rm *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(sed -i '' 's/import { creditsToUsd, formatCredits, formatDate } from \"@\\\\/lib\\\\/utils\";/import { formatDate } from \"@\\\\/lib\\\\/utils\";/' src/app/\\\\\\(worker\\\\\\)/dashboard/page.tsx)",
+      "Bash(sed -i '' '/lifetimeAgg/d' src/app/\\\\\\(worker\\\\\\)/dashboard/page.tsx)",
+      "Bash(sed -i '' 's/import { Badge } from \"@\\\\/components\\\\/ui\\\\/badge\";//' src/app/\\\\\\(worker\\\\\\)/tasks/page.tsx)",
+      "Bash(sed -i '' 's/export async function GET\\(req: NextRequest\\)/export async function GET\\(_req: NextRequest\\)/' src/app/api/ops/disputes/route.ts)",
+      "Bash(sed -i '' 's/export async function GET\\(req: NextRequest\\)/export async function GET\\(_req: NextRequest\\)/' src/app/api/worker/stripe/onboarding/route.ts)",
+      "Bash(sed -i '' 's/import { logHealthEvent } from \"@\\\\/lib\\\\/account-health\";//' src/app/api/worker/tasks/\\\\[taskId\\\\]/submit/route.ts)",
+      "Bash(sed -i '' 's/{ params }: { params: { taskId: string } }/{ params: _params }: { params: { taskId: string } }/' src/app/api/worker/tasks/\\\\[taskId\\\\]/submit/route.ts)",
+      "Bash(sed -i '' 's/import { emailQueue } from \"@\\\\/lib\\\\/queue\\\\/queues\";//' src/app/api/worker/withdraw/route.ts)",
+      "Bash(sed -i '' 's/import { emailQueue, llmScoringQueue } from \"@\\\\/lib\\\\/queue\\\\/queues\";/import { llmScoringQueue } from \"@\\\\/lib\\\\/queue\\\\/queues\";/' src/lib/queue/workers/vetting-filter.worker.ts)",
+      "Bash(npx next *)",
+      "Bash(sed -i '' 's/export async function GET\\(_req: NextRequest\\)/export async function GET\\(\\)/' /Users/apple/PoStint/src/app/api/ops/disputes/route.ts)",
+      "Bash(sed -i '' 's/export async function GET\\(_req: NextRequest\\)/export async function GET\\(\\)/' /Users/apple/PoStint/src/app/api/worker/earnings/route.ts)",
+      "Read(//dev/**)"
     ],
     "additionalDirectories": [
       "/Users/apple/PoStint/src/app/api/ops/applications/[applicationId]",

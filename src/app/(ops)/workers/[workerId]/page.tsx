@@ -37,6 +37,7 @@ export default function WorkerDetailPage() {
     if (r.ok) setW(await r.json());
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { refresh(); }, [workerId]);
 
   const action = async (path: string, body: object) => {

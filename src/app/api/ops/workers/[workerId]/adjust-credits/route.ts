@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(req: NextRequest, { params }: { params: { workerId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ workerId: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== "ops") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { workerId } = params;
+  const { workerId } = await params;
   const body = await req.json() as { amount: number; reason: string };
 
   await prisma.$transaction([

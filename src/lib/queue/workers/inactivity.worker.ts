@@ -1,11 +1,11 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 import { emailQueue } from "@/lib/queue/queues";
 
 export const inactivityWorker = new Worker(
   "inactivity-check",
-  async (_job: Job) => {
+  async () => {
     const activeWorkers = await prisma.worker.findMany({
       where: { status: "active" },
       include: {

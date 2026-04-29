@@ -1,7 +1,7 @@
 import { Worker, Job } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
-import { llmScoringQueue, emailQueue } from "@/lib/queue/queues";
+import { llmScoringQueue } from "@/lib/queue/queues";
 
 const RATE_LIMIT_MS = 6000; // 10 req/min
 

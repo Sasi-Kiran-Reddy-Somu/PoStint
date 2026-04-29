@@ -1,4 +1,4 @@
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 import { redis } from "@/lib/redis";
 import { prisma } from "@/lib/prisma";
 
@@ -7,7 +7,7 @@ const BATCH_DELAY_MS = 6000;
 
 export const revetWorker = new Worker(
   "revet",
-  async (_job: Job) => {
+  async () => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000);
 
     const workers = await prisma.worker.findMany({

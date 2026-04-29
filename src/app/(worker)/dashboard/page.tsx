@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { creditsToUsd, formatCredits, formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -11,7 +11,7 @@ export default async function DashboardPage() {
   if (!session) return null;
   const workerId = session.user.id;
 
-  const [worker, recentTasks, availableTaskCount, lifetimeAgg] = await Promise.all([
+  const [worker, recentTasks, availableTaskCount] = await Promise.all([
     prisma.worker.findUnique({ where: { id: workerId } }),
     prisma.taskAssignment.findMany({
       where: { workerId },
@@ -20,10 +20,6 @@ export default async function DashboardPage() {
       take: 5,
     }),
     prisma.task.count({ where: { status: "available", expiresAt: { gt: new Date() } } }),
-    prisma.creditTransaction.aggregate({
-      where: { workerId, direction: "earn" },
-      _sum: { amountCredits: true },
-    }),
   ]);
 
   if (!worker) return null;
@@ -61,7 +57,7 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <Badge className={worker.tier === "tier_2" ? "bg-slate-300 text-slate-900" : "bg-amber-700 text-amber-100"}>
-                {worker.tier === "tier_2" ? "Silver — Tier 2" : "Bronze — Tier 1"}
+                {worker.tier === "tier_2" ? "Tier 2" : "Tier 1"}
               </Badge>
             </div>
             <p className="text-xs text-slate-500 mt-2">

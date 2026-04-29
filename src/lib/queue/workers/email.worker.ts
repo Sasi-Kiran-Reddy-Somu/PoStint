@@ -156,7 +156,7 @@ export const emailWorker = new Worker(
           },
         });
         if (!worker || !worker.notifWeeklyEmail) break;
-        const weeklyCredits = worker.taskAssignments.reduce((sum, a) => sum + 75, 0);
+        const weeklyCredits = worker.taskAssignments.reduce((sum) => sum + 75, 0);
         await resend.emails.send({
           from: FROM_EMAIL,
           to: worker.email,
