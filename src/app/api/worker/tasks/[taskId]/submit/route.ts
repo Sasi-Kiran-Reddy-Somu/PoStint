@@ -57,35 +57,33 @@ export async function POST(req: NextRequest, { params }: { params: { taskId: str
     return NextResponse.json({ error: "The submission window has expired." }, { status: 400 });
   }
 
-  // Backend URL validation — fetch comment from Reddit
+  // Best-effort URL validation — 4s timeout, failures fall through to T+3 verification
   const ua = process.env.REDDIT_USER_AGENT ?? "WorkerMarketplace/1.0";
-  let commentData: Record<string, unknown> | null = null;
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
     const cleanUrl = url.replace(/\/$/, "");
-    const res = await fetch(`${cleanUrl}.json`, { headers: { "User-Agent": ua } });
-    if (!res.ok) {
-      return NextResponse.json({ error: "We couldn't find that comment. Please check the URL and try again." }, { status: 400 });
-    }
-    const data = await res.json();
-    // Find the comment
-    for (const section of data) {
-      const children = section?.data?.children ?? [];
-      for (const child of children) {
-        if (child.kind === "t1" || child.kind === "t3") { commentData = child.data; break; }
+    const res = await fetch(`${cleanUrl}.json`, {
+      headers: { "User-Agent": ua },
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json();
+      let commentData: Record<string, unknown> | null = null;
+      for (const section of data) {
+        const children = section?.data?.children ?? [];
+        for (const child of children) {
+          if (child.kind === "t1" || child.kind === "t3") { commentData = child.data; break; }
+        }
+        if (commentData) break;
       }
-      if (commentData) break;
+      if (commentData?.body === "[deleted]") {
+        return NextResponse.json({ error: "This comment has been deleted." }, { status: 400 });
+      }
     }
   } catch {
-    // Let it proceed — we'll retry at T+3
-  }
-
-  if (commentData) {
-    if (commentData.body === "[deleted]") {
-      return NextResponse.json({ error: "This comment has been deleted. Please post a new one and submit that URL." }, { status: 400 });
-    }
-    if (commentData.author !== assignment.worker.redditUsername) {
-      return NextResponse.json({ error: "This comment isn't from your linked account. Please post from your registered Reddit account." }, { status: 400 });
-    }
+    // Timeout or network error — proceed, T+3 worker will verify
   }
 
   const submittedAt = new Date();

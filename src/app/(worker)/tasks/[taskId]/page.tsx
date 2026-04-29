@@ -250,15 +250,24 @@ export default function TaskDetailPage() {
       return;
     }
     setSubmitting(true);
-    const res = await fetch(`/api/worker/tasks/${taskId}/submit`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: postedUrl, assignmentId }),
-    });
-    const data = await res.json();
-    setSubmitting(false);
-    if (!res.ok) { setSubmitError(data.error ?? "Submission failed."); return; }
-    setSubmitted(true);
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(`/api/worker/tasks/${taskId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: postedUrl, assignmentId }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      const data = await res.json();
+      setSubmitting(false);
+      if (!res.ok) { setSubmitError(data.error ?? "Submission failed."); return; }
+      setSubmitted(true);
+    } catch {
+      setSubmitting(false);
+      setSubmitError("Request timed out. Please try again.");
+    }
   };
 
   if (!task) return <div className="text-slate-400">Loading...</div>;
@@ -266,10 +275,16 @@ export default function TaskDetailPage() {
   // ── Submitted confirmation ──
   if (submitted) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center">
-        <h2 className="text-2xl font-bold text-white mb-3">Submitted!</h2>
-        <p className="text-slate-400 mb-6">Credits will release after verification if your post stays live.</p>
-        <Link href="/dashboard"><Button className="bg-red-600 hover:bg-red-500">Done</Button></Link>
+      <div className="max-w-md mx-auto py-16 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-green-900/30 border border-green-700 flex items-center justify-center mx-auto">
+          <Check className="w-8 h-8 text-green-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-white">Task submitted!</h2>
+        <p className="text-slate-400">Your submission is pending verification. Credits will appear in your earnings once verified.</p>
+        <div className="flex gap-3 justify-center pt-2">
+          <Link href="/earnings"><Button variant="outline" className="text-black">View earnings</Button></Link>
+          <Link href="/tasks"><Button className="bg-red-600 hover:bg-red-500">Back to tasks</Button></Link>
+        </div>
       </div>
     );
   }
