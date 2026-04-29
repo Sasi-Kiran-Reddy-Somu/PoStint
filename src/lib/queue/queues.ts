@@ -1,18 +1,40 @@
-import { Queue } from "bullmq";
-import { redis } from "@/lib/redis";
+// Only create queues when REDIS_URL is available.
+// Without it (e.g. during Next.js build) all add() calls are silent no-ops.
 
-const connection = { connection: redis };
+type SafeQueue = {
+  add: (jobName: string, data: object, opts?: object) => Promise<void>;
+};
 
-export const vettingFilterQueue = new Queue("vetting-filter", connection);
-export const llmScoringQueue = new Queue("llm-scoring", connection);
-export const verificationQueue = new Queue("t3-verification", connection);
-export const emailQueue = new Queue("email", connection);
-export const karmaSyncQueue = new Queue("karma-sync", connection);
-export const shadowbanQueue = new Queue("shadowban-check", connection);
-export const inactivityQueue = new Queue("inactivity-check", connection);
-export const retentionBonusQueue = new Queue("retention-bonus", connection);
-export const tierPromotionQueue = new Queue("tier-promotion", connection);
-export const ipOverlapQueue = new Queue("ip-overlap", connection);
-export const taxDocQueue = new Queue("tax-documents", connection);
-export const revetQueue = new Queue("revet", connection);
-export const taskExpiryQueue = new Queue("task-expiry", connection);
+const noop: SafeQueue = { async add() {} };
+
+function makeQueue(name: string): SafeQueue {
+  if (!process.env.REDIS_URL) return noop;
+  // Defer the actual Queue creation until first use to avoid top-level Redis connections.
+  let q: import("bullmq").Queue | null = null;
+  return {
+    async add(jobName, data, opts) {
+      try {
+        if (!q) {
+          const { Queue } = await import("bullmq");
+          const { redis } = await import("@/lib/redis");
+          q = new Queue(name, { connection: redis });
+        }
+        await q.add(jobName, data, opts ?? {});
+      } catch { /* ignore */ }
+    },
+  };
+}
+
+export const vettingFilterQueue  = makeQueue("vetting-filter");
+export const llmScoringQueue     = makeQueue("llm-scoring");
+export const verificationQueue   = makeQueue("t3-verification");
+export const emailQueue          = makeQueue("email");
+export const karmaSyncQueue      = makeQueue("karma-sync");
+export const shadowbanQueue      = makeQueue("shadowban-check");
+export const inactivityQueue     = makeQueue("inactivity-check");
+export const retentionBonusQueue = makeQueue("retention-bonus");
+export const tierPromotionQueue  = makeQueue("tier-promotion");
+export const ipOverlapQueue      = makeQueue("ip-overlap");
+export const taxDocQueue         = makeQueue("tax-documents");
+export const revetQueue          = makeQueue("revet");
+export const taskExpiryQueue     = makeQueue("task-expiry");
