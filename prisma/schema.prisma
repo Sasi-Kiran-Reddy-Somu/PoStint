@@ -1,0 +1,705 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum WorkerStatus {
+  pending_stripe
+  active
+  paused
+  suspended
+  dormant
+  closed
+}
+
+enum WorkerTier {
+  tier_1
+  tier_2
+}
+
+enum KycStatus {
+  pending
+  verified
+  failed
+  expired
+}
+
+enum ApplicationStatus {
+  pending_filter
+  pending_review_passed
+  pending_review_failed
+  on_hold
+  approved
+  rejected
+  expired
+}
+
+enum TaskType {
+  comment
+  post
+  upvote
+}
+
+enum TaskStatus {
+  available
+  claimed
+  submitted
+  pending_verification
+  verified
+  failed
+  expired
+  cancelled
+}
+
+enum AssignmentStatus {
+  claimed
+  submitted
+  verifying
+  verified
+  failed
+  expired
+}
+
+enum VerificationOutcome {
+  success
+  failed
+  hostile
+  deferred
+}
+
+enum CreditDirection {
+  earn
+  spend
+  withdraw
+}
+
+enum CreditState {
+  pending
+  available
+  locked
+  withdrawn
+  voided
+}
+
+enum WithdrawalStatus {
+  processing
+  completed
+  failed
+  cancelled
+}
+
+enum NotificationChannel {
+  in_app
+  email
+}
+
+enum InactivityStage {
+  none
+  stage_1
+  stage_2
+  stage_3
+  stage_4
+}
+
+enum OpsActionType {
+  pause
+  suspend
+  reactivate
+  promote_tier
+  demote_tier
+  adjust_credits
+  lock_withdrawals
+  unlock_withdrawals
+  approve_application
+  reject_application
+  resolve_dispute
+  confirm_multi_account
+  mark_false_positive
+}
+
+enum DisputeStatus {
+  open
+  in_review
+  resolved
+  frivolous
+}
+
+enum DisputeResolution {
+  upheld
+  reversed
+  partial
+}
+
+enum IpFlagSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+enum IpFlagResolution {
+  false_positive
+  confirmed_multi_account
+  trusted_shared
+  investigating
+}
+
+enum HealthActionType {
+  pause
+  extend_pause
+  reactivate
+  suspend
+  manual_reactivate
+}
+
+enum BonusType {
+  first_10_tasks
+  retention_milestone
+}
+
+// ─── Core Worker Records ──────────────────────────────────────────────────────
+
+model Worker {
+  id                    String        @id @default(cuid())
+  redditUsername        String        @unique
+  email                 String        @unique
+  passwordHash          String
+  displayName           String?
+  country               String        @default("US")
+  tier                  WorkerTier    @default(tier_1)
+  status                WorkerStatus  @default(pending_stripe)
+  kycStatus             KycStatus     @default(pending)
+  stripeAccountId       String?       @unique
+  payoutsEnabled        Boolean       @default(false)
+  accountHealthScore    Int           @default(80)
+  inactivityStage       InactivityStage @default(none)
+  hasSeenWelcomeTour    Boolean       @default(false)
+  karmaSnapshot         Json?
+  lastVettedAt          DateTime?
+  lastActiveAt          DateTime?
+  permanentBan          Boolean       @default(false)
+  withdrawalsLocked     Boolean       @default(false)
+  referralCode          String?
+  theme                 String        @default("system")
+  compactMode           Boolean       @default(false)
+  quietHoursStart       Int?
+  quietHoursEnd         Int?
+  timezone              String        @default("UTC")
+  notifTaskInApp        Boolean       @default(true)
+  notifVerifyInApp      Boolean       @default(true)
+  notifCreditsInApp     Boolean       @default(true)
+  notifHealthInApp      Boolean       @default(true)
+  notifTierInApp        Boolean       @default(true)
+  notifWithdrawInApp    Boolean       @default(true)
+  notifBonusInApp       Boolean       @default(true)
+  notifWeeklyEmail      Boolean       @default(true)
+  notifMonthlyEmail     Boolean       @default(true)
+  notifHighValueEmail   Boolean       @default(false)
+  notifTierEmail        Boolean       @default(true)
+  notifHealthEmail      Boolean       @default(true)
+  notifWithdrawEmail    Boolean       @default(true)
+  notifTaxEmail         Boolean       @default(true)
+  twoFactorEnabled      Boolean       @default(false)
+  twoFactorSecret       String?
+  loginAlertsEnabled    Boolean       @default(true)
+  pendingEmail          String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  application           Application?
+  taskAssignments       TaskAssignment[]
+  creditTransactions    CreditTransaction[]
+  withdrawals           Withdrawal[]
+  cooldowns             WorkerCooldown[]
+  healthEvents          AccountHealthEvent[]
+  healthActions         AccountHealthAction[]
+  healthScoreHistory    WorkerHealthScoreHistory[]
+  karmaHistory          WorkerKarmaHistory[]
+  ipEvents              WorkerIpEvent[]
+  notifications         Notification[]
+  bonuses               WorkerBonus[]
+  tierChanges           WorkerTierChange[]
+  lifecycleEvents       WorkerLifecycleEvent[]
+  revetLogs             WorkerRevetLog[]
+  opsActions            OpsAction[]
+  disputes              Dispute[]
+
+  @@map("workers")
+}
+
+// ─── Applications ─────────────────────────────────────────────────────────────
+
+model Application {
+  id              String            @id @default(cuid())
+  workerId        String?           @unique
+  worker          Worker?           @relation(fields: [workerId], references: [id])
+  redditUsername  String
+  email           String
+  country         String            @default("US")
+  referralCode    String?
+  status          ApplicationStatus @default(pending_filter)
+  rejectionCategory String?
+  reviewerNotes   String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  llmScore        Float?
+  llmScoreCategory String?
+  llmScoreDetails Json?
+  filterPassed    Boolean?
+  filterResults   Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  filterRuns      VettingFilterRun[]
+
+  @@map("applications")
+}
+
+model VettingFilterRun {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  runAt         DateTime    @default(now())
+  outcome       String
+  checkValues   Json
+  errorMessage  String?
+
+  @@map("vetting_filter_runs")
+}
+
+model WorkerRevetLog {
+  id        String   @id @default(cuid())
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id])
+  runAt     DateTime @default(now())
+  checkValues Json
+  outcome   String
+  errorMessage String?
+
+  @@map("worker_revet_logs")
+}
+
+// ─── Tasks ────────────────────────────────────────────────────────────────────
+
+model Task {
+  id             String     @id @default(cuid())
+  externalTaskId String?    @unique
+  source         String     @default("manual")
+  type           TaskType   @default(comment)
+  brief          Json
+  targetSubreddit String
+  targetThreadUrl String?
+  threadTitle    String?
+  brandId        String?
+  creditValue    Int
+  minTier        WorkerTier @default(tier_1)
+  status         TaskStatus @default(available)
+  expiresAt      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  assignments    TaskAssignment[]
+  cooldowns      WorkerCooldown[]
+
+  @@map("tasks")
+}
+
+model TaskAssignment {
+  id                String           @id @default(cuid())
+  taskId            String
+  task              Task             @relation(fields: [taskId], references: [id])
+  workerId          String
+  worker            Worker           @relation(fields: [workerId], references: [id])
+  status            AssignmentStatus @default(claimed)
+  claimedAt         DateTime         @default(now())
+  submitDeadline    DateTime
+  submittedAt       DateTime?
+  postedUrl         String?
+  verificationState VerificationOutcome?
+  verifiedAt        DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime         @default(now())
+
+  creditTransaction CreditTransaction?
+  verification      TaskVerification?
+  dispute           Dispute?
+  lifecycleEvent    TaskLifecycleEvent?
+
+  @@unique([taskId, workerId])
+  @@map("task_assignments")
+}
+
+model TaskVerification {
+  id               String              @id @default(cuid())
+  assignmentId     String              @unique
+  assignment       TaskAssignment      @relation(fields: [assignmentId], references: [id])
+  verifiedAt       DateTime            @default(now())
+  outcome          VerificationOutcome
+  rawApiResponse   Json?
+  existenceCheck   Boolean             @default(false)
+  removalCheck     Boolean             @default(false)
+  deletionCheck    Boolean             @default(false)
+  authorMatch      Boolean             @default(false)
+  engagementScore  Int?
+  controversiality Int?
+  replyCount       Int?
+  deferredCount    Int                 @default(0)
+  scheduledFor     DateTime?
+
+  @@map("task_verifications")
+}
+
+model TaskLifecycleEvent {
+  id           String          @id @default(cuid())
+  assignmentId String          @unique
+  assignment   TaskAssignment  @relation(fields: [assignmentId], references: [id])
+  taskId       String
+  workerId     String
+  claimedAt    DateTime
+  expiredAt    DateTime?
+  disposition  String?
+  createdAt    DateTime        @default(now())
+
+  @@map("task_lifecycle_events")
+}
+
+// ─── Credits & Withdrawals ────────────────────────────────────────────────────
+
+model CreditTransaction {
+  id               String          @id @default(cuid())
+  workerId         String
+  worker           Worker          @relation(fields: [workerId], references: [id])
+  amountCredits    Int
+  direction        CreditDirection
+  state            CreditState     @default(pending)
+  taskAssignmentId String?         @unique
+  taskAssignment   TaskAssignment? @relation(fields: [taskAssignmentId], references: [id])
+  withdrawalId     String?
+  withdrawal       Withdrawal?     @relation(fields: [withdrawalId], references: [id])
+  reason           String?
+  releasesAt       DateTime?
+  voidedAt         DateTime?
+  voidedBy         String?
+  createdAt        DateTime        @default(now())
+
+  history          CreditTransactionHistory[]
+
+  @@map("credit_transactions")
+}
+
+model CreditTransactionHistory {
+  id            String            @id @default(cuid())
+  transactionId String
+  transaction   CreditTransaction @relation(fields: [transactionId], references: [id])
+  fromState     CreditState
+  toState       CreditState
+  changedBy     String
+  reason        String?
+  changedAt     DateTime          @default(now())
+
+  @@map("credit_transaction_history")
+}
+
+model Withdrawal {
+  id             String           @id @default(cuid())
+  workerId       String
+  worker         Worker           @relation(fields: [workerId], references: [id])
+  amountCredits  Int
+  amountDollars  Float
+  status         WithdrawalStatus @default(processing)
+  stripePayoutId String?          @unique
+  failureReason  String?
+  initiatedAt    DateTime         @default(now())
+  completedAt    DateTime?
+
+  transactions   CreditTransaction[]
+
+  @@map("withdrawals")
+}
+
+// ─── Cooldowns ────────────────────────────────────────────────────────────────
+
+model WorkerCooldown {
+  id             String   @id @default(cuid())
+  workerId       String
+  worker         Worker   @relation(fields: [workerId], references: [id])
+  brandId        String
+  taskId         String?
+  task           Task?    @relation(fields: [taskId], references: [id])
+  lastPaidTaskAt DateTime @default(now())
+  expiresAt      DateTime
+
+  @@unique([workerId, brandId])
+  @@map("worker_cooldowns")
+}
+
+// ─── Account Health ───────────────────────────────────────────────────────────
+
+model AccountHealthEvent {
+  id          String   @id @default(cuid())
+  workerId    String
+  worker      Worker   @relation(fields: [workerId], references: [id])
+  eventType   String
+  signalValue Json
+  scoreDelta  Int      @default(0)
+  recordedAt  DateTime @default(now())
+
+  @@map("account_health_events")
+}
+
+model AccountHealthAction {
+  id             String           @id @default(cuid())
+  workerId       String
+  worker         Worker           @relation(fields: [workerId], references: [id])
+  action         HealthActionType
+  triggeringScore Int?
+  threshold      Int?
+  reason         String?
+  actionedBy     String           @default("system")
+  actionedAt     DateTime         @default(now())
+
+  @@map("account_health_actions")
+}
+
+model WorkerHealthScoreHistory {
+  id           String   @id @default(cuid())
+  workerId     String
+  worker       Worker   @relation(fields: [workerId], references: [id])
+  oldScore     Int
+  newScore     Int
+  triggerEvent String?
+  computedAt   DateTime @default(now())
+
+  @@map("worker_health_score_history")
+}
+
+model WorkerKarmaHistory {
+  id           String   @id @default(cuid())
+  workerId     String
+  worker       Worker   @relation(fields: [workerId], references: [id])
+  totalKarma   Int
+  commentKarma Int
+  linkKarma    Int
+  snapshotAt   DateTime @default(now())
+
+  @@map("worker_karma_history")
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String              @id @default(cuid())
+  workerId  String
+  worker    Worker              @relation(fields: [workerId], references: [id])
+  channel   NotificationChannel
+  type      String
+  title     String
+  body      String
+  payload   Json?
+  read      Boolean             @default(false)
+  createdAt DateTime            @default(now())
+
+  @@index([workerId, read])
+  @@map("notifications")
+}
+
+// ─── Inactivity & Bonuses ─────────────────────────────────────────────────────
+
+model WorkerBonus {
+  id        String    @id @default(cuid())
+  workerId  String
+  worker    Worker    @relation(fields: [workerId], references: [id])
+  bonusType BonusType
+  amount    Int
+  milestone String?
+  queuedAt  DateTime  @default(now())
+  appliedAt DateTime?
+
+  @@map("worker_bonuses")
+}
+
+model WorkerTierChange {
+  id          String     @id @default(cuid())
+  workerId    String
+  worker      Worker     @relation(fields: [workerId], references: [id])
+  oldTier     WorkerTier
+  newTier     WorkerTier
+  triggeredBy String     @default("auto_karma")
+  karmaAt     Int?
+  promotedAt  DateTime   @default(now())
+
+  @@map("worker_tier_changes")
+}
+
+model WorkerLifecycleEvent {
+  id        String   @id @default(cuid())
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id])
+  eventType String
+  stage     String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@map("worker_lifecycle_events")
+}
+
+// ─── IP & Fraud ───────────────────────────────────────────────────────────────
+
+model WorkerIpEvent {
+  id        String   @id @default(cuid())
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id])
+  ipAddress String
+  eventType String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([ipAddress])
+  @@index([workerId])
+  @@map("worker_ip_events")
+}
+
+model BannedIp {
+  id        String   @id @default(cuid())
+  ipAddress String   @unique
+  reason    String
+  addedBy   String   @default("system")
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+
+  @@map("banned_ips")
+}
+
+model BannedIdentity {
+  id            String   @id @default(cuid())
+  fullName      String?
+  taxId         String?
+  bankAccount   String?
+  workerId      String
+  reason        String
+  createdAt     DateTime @default(now())
+
+  @@map("banned_identities")
+}
+
+model IpOverlapFlag {
+  id           String           @id @default(cuid())
+  ipAddress    String
+  workerIds    Json
+  eventCounts  Json
+  geoInfo      Json?
+  severity     IpFlagSeverity   @default(low)
+  resolution   IpFlagResolution?
+  resolvedBy   String?
+  resolveReason String?
+  resolvedAt   DateTime?
+  assignedTo   String?
+  createdAt    DateTime         @default(now())
+
+  @@map("ip_overlap_flags")
+}
+
+// ─── Disputes ─────────────────────────────────────────────────────────────────
+
+model Dispute {
+  id               String            @id @default(cuid())
+  workerId         String
+  worker           Worker            @relation(fields: [workerId], references: [id])
+  taskAssignmentId String            @unique
+  taskAssignment   TaskAssignment    @relation(fields: [taskAssignmentId], references: [id])
+  reasonCategory   String
+  workerExplanation String
+  evidenceUrl      String?
+  status           DisputeStatus     @default(open)
+  resolution       DisputeResolution?
+  creditsPaid      Int?
+  reviewerNotes    String?
+  resolvedBy       String?
+  openedAt         DateTime          @default(now())
+  resolvedAt       DateTime?
+
+  @@map("disputes")
+}
+
+// ─── Ops ──────────────────────────────────────────────────────────────────────
+
+model OpsUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+
+  @@map("ops_users")
+}
+
+model OpsAction {
+  id         String        @id @default(cuid())
+  workerId   String?
+  worker     Worker?       @relation(fields: [workerId], references: [id])
+  reviewerId String
+  actionType OpsActionType
+  reason     String?
+  notes      String?
+  metadata   Json?
+  actionedAt DateTime      @default(now())
+
+  @@map("ops_actions")
+}
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+
+model VettingThreshold {
+  id          String  @id @default(cuid())
+  key         String  @unique
+  value       Float
+  description String?
+
+  @@map("vetting_thresholds")
+}
+
+model TaskCreditValue {
+  id          String   @id @default(cuid())
+  taskType    TaskType @unique
+  credits     Int
+  description String?
+
+  @@map("task_credit_values")
+}
+
+model HealthScoreWeight {
+  id          String  @id @default(cuid())
+  signalKey   String  @unique
+  weight      Float
+  description String?
+
+  @@map("health_score_weights")
+}
+
+model PlatformConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("platform_config")
+}
+
+// ─── Tax Documents ────────────────────────────────────────────────────────────
+
+model TaxDocument {
+  id         String   @id @default(cuid())
+  workerId   String
+  year       Int
+  docType    String
+  storageUrl String
+  generatedAt DateTime @default(now())
+
+  @@unique([workerId, year])
+  @@map("tax_documents")
+}

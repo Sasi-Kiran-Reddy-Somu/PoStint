@@ -1,0 +1,10 @@
+.env.local
+.env
+.claude/
+.next/
+node_modules/
+out/
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+prisma/migrations/
