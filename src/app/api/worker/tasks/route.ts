@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-// Fisher-Yates shuffle
+const WORKER_ID = "cmokektv0002srgywx6xnim0j";
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -13,12 +13,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session || session.user.role !== "worker") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const workerId = session.user.id;
+  const workerId = WORKER_ID;
   const worker = await prisma.worker.findUnique({ where: { id: workerId } });
   if (!worker || worker.status !== "active") {
     return NextResponse.json({ tasks: [], capReached: false });
@@ -48,8 +43,6 @@ export async function GET(req: NextRequest) {
   });
 
   const eligible = tasks.filter((t) => !t.brandId || !cooledBrands.has(t.brandId));
-
-  // Shuffle for random/newest — keep credit sort ordered
   const sorted = sort === "credits" ? eligible : shuffle(eligible);
 
   return NextResponse.json({

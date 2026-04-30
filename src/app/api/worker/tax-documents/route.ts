@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-  const session = await auth();
-  if (!session || session.user.role !== "worker") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+const WORKER_ID = "cmokektv0002srgywx6xnim0j";
 
+export async function GET() {
   const documents = await prisma.taxDocument.findMany({
-    where: { workerId: session.user.id },
+    where: { workerId: WORKER_ID },
     orderBy: { year: "desc" },
   });
 

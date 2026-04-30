@@ -1,29 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session || session.user.role !== "worker") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+const WORKER_ID = "cmokektv0002srgywx6xnim0j";
 
-  const workerId = session.user.id;
+export async function GET(req: NextRequest) {
+  const workerId = WORKER_ID;
   const { searchParams } = new URL(req.url);
   const sse = searchParams.get("stream") === "true";
 
   if (sse) {
-    // Server-Sent Events stream for real-time notifications
     const encoder = new TextEncoder();
     let closed = false;
 
     const stream = new ReadableStream({
       async start(controller) {
-        // Send initial unread count
         const unread = await prisma.notification.count({ where: { workerId, read: false, channel: "in_app" } });
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "init", unread })}\n\n`));
 
-        // Poll for new notifications every 10s
         const interval = setInterval(async () => {
           if (closed) return;
           try {
@@ -55,7 +48,6 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Regular GET — return paginated notifications
   const notifications = await prisma.notification.findMany({
     where: { workerId, channel: "in_app" },
     orderBy: { createdAt: "desc" },
@@ -66,12 +58,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await auth();
-  if (!session || session.user.role !== "worker") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const workerId = session.user.id;
+  const workerId = WORKER_ID;
   const body = await req.json() as { ids?: string[]; all?: boolean };
 
   if (body.all) {

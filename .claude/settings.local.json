@@ -25,7 +25,12 @@
       "Bash(npx next *)",
       "Bash(sed -i '' 's/export async function GET\\(_req: NextRequest\\)/export async function GET\\(\\)/' /Users/apple/PoStint/src/app/api/ops/disputes/route.ts)",
       "Bash(sed -i '' 's/export async function GET\\(_req: NextRequest\\)/export async function GET\\(\\)/' /Users/apple/PoStint/src/app/api/worker/earnings/route.ts)",
-      "Read(//dev/**)"
+      "Read(//dev/**)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('next:', p.dependencies.next\\)\")",
+      "Bash(openssl rand *)",
+      "Bash(curl -s http://localhost:5555/api/data)",
+      "Bash(kill %1)",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "/Users/apple/PoStint/src/app/api/ops/applications/[applicationId]",
