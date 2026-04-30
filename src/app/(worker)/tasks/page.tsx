@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import { creditsToUsd } from "@/lib/utils";
-import { Clock } from "lucide-react";
 
 interface Task {
   id: string;
@@ -25,9 +24,6 @@ const typeBadgeColor: Record<string, string> = {
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [capReached, setCapReached] = useState(false);
-  const [dailyCap, setDailyCap] = useState(1);
-  const [claimed, setClaimed] = useState(0);
   const [typeFilter, setTypeFilter] = useState<"all" | "comment" | "upvote" | "post">("all");
   const [tier, setTier] = useState<string>("tier_1");
   const [loading, setLoading] = useState(true);
@@ -37,9 +33,6 @@ export default function TasksPage() {
       const res = await fetch(`/api/worker/tasks?sort=random&type=${typeFilter}`);
       const data = await res.json();
       setTasks(data.tasks ?? []);
-      setCapReached(data.capReached ?? false);
-      setDailyCap(data.dailyCap ?? 1);
-      setClaimed(data.claimed ?? 0);
       setTier(data.tier ?? "tier_1");
     } catch {/* ignore */}
     finally { setLoading(false); }
@@ -60,17 +53,6 @@ export default function TasksPage() {
 
   if (loading) return <div className="text-slate-400">Loading tasks...</div>;
 
-  if (capReached) {
-    return (
-      <div className="max-w-3xl mx-auto text-center py-16">
-        <Clock className="w-16 h-16 mx-auto text-slate-600 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Daily cap reached.</h2>
-        <p className="text-slate-400">Your cap resets at midnight UTC. Check back then.</p>
-        <p className="text-xs text-slate-600 mt-4">{claimed} of {dailyCap} used today</p>
-      </div>
-    );
-  }
-
   const typeOptions: { value: "all" | "comment" | "upvote" | "post"; label: string }[] = [
     { value: "all", label: "All types" },
     { value: "comment", label: "Comments" },
@@ -83,10 +65,8 @@ export default function TasksPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Available tasks</h1>
-          <p className="text-slate-400 text-sm">{claimed} of {dailyCap} used today</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {/* Type filter */}
           <div className="flex gap-1.5">
             {typeOptions.map((opt) => (
               <Button
@@ -100,7 +80,6 @@ export default function TasksPage() {
               </Button>
             ))}
           </div>
-
         </div>
       </div>
 

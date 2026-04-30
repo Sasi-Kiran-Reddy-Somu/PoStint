@@ -22,16 +22,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tas
     return NextResponse.json({ error: "Your account is not active." }, { status: 403 });
   }
 
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const dailyCap = worker.tier === "tier_2" ? 2 : 1;
-  const todayClaimed = await prisma.taskAssignment.count({
-    where: { workerId, claimedAt: { gte: todayStart } },
-  });
-  if (todayClaimed >= dailyCap) {
-    return NextResponse.json({ error: "Daily cap reached." }, { status: 403 });
-  }
-
   // Atomic claim with compare-and-swap
   try {
     const result = await prisma.$transaction(async (tx) => {

@@ -24,18 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ tasks: [], capReached: false });
   }
 
-  const todayStart = new Date();
-  todayStart.setUTCHours(0, 0, 0, 0);
-  const dailyCap = worker.tier === "tier_2" ? 2 : 1;
-
-  const todayClaimed = await prisma.taskAssignment.count({
-    where: { workerId, claimedAt: { gte: todayStart } },
-  });
-
-  if (todayClaimed >= dailyCap) {
-    return NextResponse.json({ tasks: [], capReached: true, dailyCap, claimed: todayClaimed });
-  }
-
   const cooldowns = await prisma.workerCooldown.findMany({
     where: { workerId, expiresAt: { gt: new Date() } },
   });
@@ -67,8 +55,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     tasks: sorted,
     capReached: false,
-    dailyCap,
-    claimed: todayClaimed,
     deprioritized: isDeprioritized,
     tier: worker.tier,
   });
