@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +5,10 @@ import { Progress } from "@/components/ui/progress";
 import { formatRelativeTime } from "@/lib/utils";
 import Link from "next/link";
 
+const WORKER_ID = "cmokektv0002srgywx6xnim0j";
+
 export default async function DashboardPage() {
-  const session = await auth();
-  if (!session) return null;
-  const workerId = session.user.id;
+  const workerId = WORKER_ID;
 
   const [worker, recentTasks, availableTaskCount] = await Promise.all([
     prisma.worker.findUnique({ where: { id: workerId } }),

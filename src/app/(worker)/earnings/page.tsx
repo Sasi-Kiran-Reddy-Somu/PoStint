@@ -1,14 +1,13 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { creditsToUsd, formatCredits, formatDate } from "@/lib/utils";
 import { VerificationInfo } from "@/components/worker/verification-info";
 
+const WORKER_ID = "cmokektv0002srgywx6xnim0j";
+
 export default async function EarningsPage() {
-  const session = await auth();
-  if (!session) return null;
-  const workerId = session.user.id;
+  const workerId = WORKER_ID;
 
   const [pending, available, lifetime, pendingTxs, availableTxs] = await Promise.all([
     prisma.creditTransaction.aggregate({
