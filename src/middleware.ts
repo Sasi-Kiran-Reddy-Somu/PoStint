@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Redirect root and login straight to dashboard
-  if (pathname === "/" || pathname === "/login") {
+  // Redirect root straight to dashboard
+  if (pathname === "/") {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
