@@ -24,19 +24,6 @@ export default async function DashboardPage() {
 
   if (!worker) return null;
 
-  // Survival rate (last 30 days)
-  const recentVerifs = await prisma.taskAssignment.findMany({
-    where: {
-      workerId,
-      verifiedAt: { gte: new Date(Date.now() - 30 * 86_400_000) },
-      status: { in: ["verified", "failed"] },
-    },
-  });
-  const survived = recentVerifs.filter((a) => a.status === "verified").length;
-  const survivalRate = recentVerifs.length >= 5
-    ? `${Math.round((survived / recentVerifs.length) * 100)}%`
-    : "Not enough data yet";
-
   // Karma to T2 progress
   const t2Threshold = 5000;
   const currentKarma = (worker.karmaSnapshot as { total?: number } | null)?.total ?? 0;
@@ -51,7 +38,7 @@ export default async function DashboardPage() {
         <p className="text-slate-400 mt-1">Here&apos;s what&apos;s happening with your account.</p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 gap-4">
         <Card className="bg-slate-900 border-slate-800">
           <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-400">Tier</CardTitle></CardHeader>
           <CardContent>
@@ -85,13 +72,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-400">T+3 Survival Rate (30d)</CardTitle></CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-white">{survivalRate}</div>
-            <p className="text-xs text-slate-500 mt-2">% of tasks that survived verification</p>
-          </CardContent>
-        </Card>
       </div>
 
       <Card className="bg-slate-900 border-slate-800">
