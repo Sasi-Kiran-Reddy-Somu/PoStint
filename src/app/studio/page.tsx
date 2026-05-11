@@ -152,6 +152,7 @@ export default function StudioPage() {
   const [showModal, setShowModal] = useState(false);
   const [tier, setTier] = useState("tier1");
   const [scheduleDate, setScheduleDate] = useState("");
+  const [boostQty, setBoostQty] = useState(5);
   const [prompt, setPrompt] = useState("");
   const [generatedComment, setGeneratedComment] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -162,6 +163,12 @@ export default function StudioPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [openReply, setOpenReply] = useState<number | null>(null);
   const historyRef = useRef<HTMLDivElement>(null);
+
+  const BALANCE = 142;
+  const TIER_CREDITS: Record<string, number> = { tier1: 10, tier2: 7.5, tier3: 5 };
+  const baseCost = TIER_CREDITS[tier] ?? 10;
+  const totalCost = rankToggle ? baseCost + boostQty : baseCost;
+  const canAfford = totalCost <= BALANCE;
 
   // Close history dropdown on outside click
   useEffect(() => {
@@ -402,13 +409,59 @@ export default function StudioPage() {
                 <span style={{ background: tier === t.value ? ORANGE : "#1e3a5f", color: tier === t.value ? "#fff" : "#60a5fa", padding: "3px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, flexShrink: 0, marginLeft: 10 }}>{t.credits}</span>
               </div>
             ))}
-            <div style={{ marginTop: 18, marginBottom: 18 }}>
+
+            {/* Boost qty — only shown when Rank My Comment is on */}
+            {rankToggle && (
+              <div style={{ background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 12 }}>
+                <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10, fontWeight: 600 }}>Number of upvote boosts: <span style={{ color: "#fff" }}>{boostQty}</span> <span style={{ color: "#64748b", fontWeight: 400 }}>({boostQty} credits)</span></div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[5, 10, 20].map(q => (
+                    <button
+                      key={q}
+                      onClick={() => setBoostQty(q)}
+                      style={{
+                        padding: "6px 18px", borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: "pointer",
+                        border: `1px solid ${boostQty === q ? ORANGE : BORDER}`,
+                        background: boostQty === q ? "rgba(232,93,47,0.15)" : "transparent",
+                        color: boostQty === q ? ORANGE : "#94a3b8",
+                      }}
+                    >{q}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: 4, marginBottom: 14 }}>
               <label style={{ fontSize: 12, color: "#64748b", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: 1, fontWeight: 700 }}>Schedule</label>
               <input type="datetime-local" value={scheduleDate} onChange={(e) => setScheduleDate(e.target.value)} style={{ width: "100%", background: "#162032", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "9px 12px", borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box" }} />
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+
+            {/* Task summary */}
+            <div style={{ background: "#0d1520", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Tasks Summary</div>
+              <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>1 main comment task</div>
+              {rankToggle && <div style={{ fontSize: 12, color: "#94a3b8" }}>{boostQty} upvote boost tasks</div>}
+            </div>
+
+            {/* Total + balance */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>Total: {totalCost} credits</span>
+              <span style={{ fontSize: 12, color: "#64748b" }}>Your balance: {BALANCE} credits</span>
+            </div>
+            {!canAfford && (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 12, color: "#f87171", marginBottom: 4 }}>You need {Math.ceil(totalCost - BALANCE)} more credits</div>
+                <a href="/studio/billing" style={{ fontSize: 12, color: ORANGE, fontWeight: 600, textDecoration: "none" }}>Top Up Credits →</a>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 10, marginTop: canAfford ? 14 : 6 }}>
               <button onClick={() => setShowModal(false)} style={{ flex: 1, background: "transparent", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
-              <button onClick={() => setShowModal(false)} style={{ flex: 2, background: ORANGE, color: "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>✓ Confirm Task</button>
+              {canAfford ? (
+                <button onClick={() => setShowModal(false)} style={{ flex: 2, background: ORANGE, color: "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>✓ Confirm Task</button>
+              ) : (
+                <button disabled style={{ flex: 2, background: "#1e293b", color: "#475569", border: `1px solid ${BORDER}`, padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "not-allowed" }}>Insufficient Credits</button>
+              )}
             </div>
           </div>
         </div>
