@@ -275,6 +275,7 @@ export default function StudioPage() {
   const [rankToggle, setRankToggle] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [openReply, setOpenReply] = useState<number | null>(null);
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
   const historyRef = useRef<HTMLDivElement>(null);
 
   const BALANCE = 142;
@@ -394,16 +395,26 @@ export default function StudioPage() {
               </div>
               {/* Nested replies */}
               {c.replies && c.replies.length > 0 && (
-                <div style={{ marginLeft: 20, borderLeft: `2px solid ${BORDER}`, paddingLeft: 12, marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
-                  {c.replies.map((r, j) => (
-                    <div key={j} style={{ background: "#0d1520", borderRadius: 6, padding: "8px 10px" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: "#7dd3fc" }}>{r.user}</span>
-                        <span style={{ fontSize: 10, color: "#475569" }}>▲ {r.upvotes}</span>
-                      </div>
-                      <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{r.text}</p>
+                <div style={{ marginLeft: 20, borderLeft: `2px solid ${BORDER}`, paddingLeft: 12, marginTop: 4 }}>
+                  <button
+                    onClick={() => setExpandedReplies(prev => { const next = new Set(prev); if (next.has(i)) { next.delete(i); } else { next.add(i); } return next; })}
+                    style={{ background: "transparent", border: "none", color: "#475569", fontSize: 11, cursor: "pointer", padding: "2px 0", fontWeight: 600 }}
+                  >
+                    {expandedReplies.has(i) ? "▲ Hide" : "▼"} {c.replies.length} {c.replies.length === 1 ? "reply" : "replies"}
+                  </button>
+                  {expandedReplies.has(i) && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+                      {c.replies.map((r, j) => (
+                        <div key={j} style={{ background: "#0d1520", borderRadius: 6, padding: "8px 10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: "#7dd3fc" }}>{r.user}</span>
+                            <span style={{ fontSize: 10, color: "#475569" }}>▲ {r.upvotes}</span>
+                          </div>
+                          <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{r.text}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
