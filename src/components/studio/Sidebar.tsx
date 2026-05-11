@@ -1,8 +1,12 @@
 "use client";
+import Link from "next/link";
+import { useState } from "react";
 
 export const ORANGE = "#e85d2f";
 export const SIDEBAR_BG = "#1e2a3b";
 export const BORDER = "#1f2d3d";
+
+const PROJECTS = ["Blackbrookcase", "Nomad Goods", "Bellroy UK"];
 
 const NAV_ITEMS = [
   { label: "Brand Setup", badge: null },
@@ -31,6 +35,9 @@ const NAV_ROUTES: Record<string, string> = {
 interface SidebarProps { activeNav: string }
 
 export default function Sidebar({ activeNav }: SidebarProps) {
+  const [project, setProject] = useState("Blackbrookcase");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   return (
     <div style={{ width: 250, background: SIDEBAR_BG, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, flexShrink: 0, height: "100vh", position: "sticky", top: 0 }}>
       {/* Logo */}
@@ -39,12 +46,43 @@ export default function Sidebar({ activeNav }: SidebarProps) {
           <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6 }} />
           <span style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>Reddit Studio</span>
         </div>
-        <div style={{ background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
-          <div>
-            <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>Blackbrookcase</div>
+
+        {/* Project dropdown */}
+        <div style={{ position: "relative" }}>
+          <div
+            onClick={() => setDropdownOpen(o => !o)}
+            style={{ background: "#162032", border: `1px solid ${dropdownOpen ? ORANGE : BORDER}`, borderRadius: 8, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
+          >
+            <div>
+              <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
+            </div>
+            <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
           </div>
-          <span style={{ color: "#64748b", fontSize: 11 }}>▼</span>
+
+          {dropdownOpen && (
+            <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden", zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+              {PROJECTS.map(p => (
+                <div
+                  key={p}
+                  onClick={() => { setProject(p); setDropdownOpen(false); }}
+                  style={{
+                    padding: "10px 12px", fontSize: 13, cursor: "pointer",
+                    color: p === project ? "#fff" : "#94a3b8",
+                    background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
+                    borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
+                    fontWeight: p === project ? 600 : 400,
+                    transition: "background 0.1s",
+                  }}
+                >
+                  {p}
+                </div>
+              ))}
+              <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 12px", fontSize: 12, color: ORANGE, cursor: "pointer", fontWeight: 600 }}>
+                + New Project
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -53,7 +91,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {NAV_ITEMS.map((item) => {
           const isActive = activeNav === item.label;
           return (
-            <a
+            <Link
               key={item.label}
               href={NAV_ROUTES[item.label]}
               style={{
@@ -71,7 +109,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   {item.badge}
                 </span>
               )}
-            </a>
+            </Link>
           );
         })}
       </nav>
