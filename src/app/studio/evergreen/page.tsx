@@ -296,8 +296,8 @@ export default function EvergreenPage() {
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#0a0f1a", color: "#e2e8f0", overflow: "hidden" }}>
       <Sidebar activeNav="Evergreen Opportunities" />
 
-      {/* Center — fixed width */}
-      <div style={{ width: 360, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}` }}>
+      {/* Center — flex 1 = 50% */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}` }}>
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, background: "#0d1520" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
@@ -448,14 +448,14 @@ export default function EvergreenPage() {
             </div>
           </div>
 
+          {/* Output textarea */}
+          <textarea readOnly value={generatedComment} placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 10, lineHeight: 1.5, boxSizing: "border-box" }} />
+
           {/* Generate button */}
-          <button onClick={handleGenerate} disabled={generating} style={{ width: "100%", background: generating ? "#4a2a1a" : ORANGE, color: generating ? "#fdba74" : "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <button onClick={handleGenerate} disabled={generating} style={{ width: "100%", background: generating ? "#4a2a1a" : ORANGE, color: generating ? "#fdba74" : "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", marginBottom: hasGenerated ? 8 : 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
             {generating ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Generating...</> : hasGenerated ? "✦ Regenerate" : "✦ Generate Comment"}
           </button>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-
-          {/* Output textarea */}
-          <textarea readOnly value={generatedComment} placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: hasGenerated ? 8 : 12, lineHeight: 1.5, boxSizing: "border-box" }} />
 
           {/* Refine row — only shown after generation */}
           {hasGenerated && (
