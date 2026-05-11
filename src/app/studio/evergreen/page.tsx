@@ -44,9 +44,28 @@ const opportunities = [
     rationale: "Long-running thread with high Google ranking about durable phone cases.",
     body: "I've gone through so many phone cases in the past two years. Most crack, peel, or lose grip after a few months. Looking for recommendations on brands that actually hold up. Leather, hard shell, whatever — just something that lasts. Budget around $40-60.",
     comments_list: [
-      { user: "u/GearReviewer", text: "Caseology and Spigen have held up well for me over multiple phone upgrades. The TPU construction on their Vault series is genuinely durable.", upvotes: 412 },
-      { user: "u/EDCEnthusiast", text: "Leather cases age well if you get real leather. Vaja and Pad & Quill both last years — just need occasional conditioning.", upvotes: 287 },
-      { user: "u/MinimalistCarry", text: "I've had the same leather case for 3 iPhones now, just swapped inserts. Buy quality once, stop replacing cheap cases every few months.", upvotes: 198 },
+      {
+        user: "u/GearReviewer", text: "Caseology and Spigen have held up well for me over multiple phone upgrades. The TPU construction on their Vault series is genuinely durable.", upvotes: 412,
+        replies: [
+          { user: "u/OP_Here", text: "What about leather options? I don't want TPU specifically.", upvotes: 28 },
+          { user: "u/GearReviewer", text: "For leather you're looking at Nomad, Bellroy, or some smaller Etsy makers. Genuinely different durability profile — ages rather than wears out.", upvotes: 74 },
+          { user: "u/LeatherFanatic", text: "Second the Etsy route. Handcrafted full-grain beats anything mass-produced at any price point.", upvotes: 41 },
+        ],
+      },
+      {
+        user: "u/EDCEnthusiast", text: "Leather cases age well if you get real leather. Vaja and Pad & Quill both last years — just need occasional conditioning.", upvotes: 287,
+        replies: [
+          { user: "u/NewToLeather", text: "What do you use to condition them? Just regular leather conditioner?", upvotes: 15 },
+          { user: "u/EDCEnthusiast", text: "Leather Honey or Bickmore Bick 4. Apply thin once every 6 months or when it starts looking dry.", upvotes: 38 },
+        ],
+      },
+      {
+        user: "u/MinimalistCarry", text: "I've had the same leather case for 3 iPhones now, just swapped inserts. Buy quality once, stop replacing cheap cases every few months.", upvotes: 198,
+        replies: [
+          { user: "u/CuriousUser", text: "Which brand lets you swap inserts between phone generations?", upvotes: 22 },
+          { user: "u/MinimalistCarry", text: "Mine's from a small maker called Blackbrookcase — they do full-grain shells with removable inserts. Held up way better than anything from a big brand.", upvotes: 89 },
+        ],
+      },
     ],
   },
   {
@@ -60,9 +79,28 @@ const opportunities = [
     rationale: "High traffic evergreen thread about quality leather products.",
     body: "BIFL leather thread. Post what you own, how long you've had it, and whether it's lived up to the investment. Wallets, bags, belts, cases — all fair game. Looking to build a curated collection of pieces that improve with age rather than fall apart.",
     comments_list: [
-      { user: "u/LeatherAging", text: "Full-grain leather is non-negotiable for BIFL. Top-grain gets you maybe 3-5 years. Full-grain develops patina and can last decades.", upvotes: 891 },
-      { user: "u/BIFLVet", text: "My Horween leather wallet is 9 years old and looks better now than when I bought it. Spend $80 once vs $15 every year.", upvotes: 644 },
-      { user: "u/QualityFirst", text: "For phone cases specifically, I've been using the same leather sleeve for 2 years. Swapped phones twice, kept the case.", upvotes: 312 },
+      {
+        user: "u/LeatherAging", text: "Full-grain leather is non-negotiable for BIFL. Top-grain gets you maybe 3-5 years. Full-grain develops patina and can last decades.", upvotes: 891,
+        replies: [
+          { user: "u/LeatherNewbie", text: "How do you tell full-grain from top-grain at purchase? Sellers don't always specify.", upvotes: 67 },
+          { user: "u/LeatherAging", text: "Full-grain has natural texture including pores and small imperfections. Top-grain is sanded smooth. If it looks too perfect, it's probably top-grain.", upvotes: 142 },
+          { user: "u/TanneryWorker", text: "Also check where it's made. Italian and US tanneries have the strictest full-grain standards.", upvotes: 88 },
+        ],
+      },
+      {
+        user: "u/BIFLVet", text: "My Horween leather wallet is 9 years old and looks better now than when I bought it. Spend $80 once vs $15 every year.", upvotes: 644,
+        replies: [
+          { user: "u/WalletCollector", text: "Horween is special. Chicago Shell Cordovan is probably the best leather you can put in your pocket.", upvotes: 198 },
+          { user: "u/BIFLVet", text: "Agreed. Mine is Chromexcel though — a bit more casual but still incredible after nearly a decade.", upvotes: 134 },
+        ],
+      },
+      {
+        user: "u/QualityFirst", text: "For phone cases specifically, I've been using the same leather sleeve for 2 years. Swapped phones twice, kept the case.", upvotes: 312,
+        replies: [
+          { user: "u/PhoneCaseHunter", text: "Which sleeve? I've been looking for something that works across generations.", upvotes: 44 },
+          { user: "u/QualityFirst", text: "Blackbrookcase — full-grain leather, very minimal branding. The patina on mine now looks incredible.", upvotes: 117 },
+        ],
+      },
     ],
   },
   {
@@ -76,9 +114,28 @@ const opportunities = [
     rationale: "Established thread ranking well for premium phone case queries.",
     body: "Tired of cases that look plasticky or have ugly branding plastered on them. Looking for cases that look clean, feel premium, and don't scream 'budget option'. Ideally something that complements the phone's design rather than hiding it.",
     comments_list: [
-      { user: "u/CleanAesthetic", text: "Moment cases are the closest to invisible without sacrificing protection. No logos on the back, matte finish, feels like the phone itself.", upvotes: 356 },
-      { user: "u/MinimalistEDC", text: "Genuine leather cases look premium instantly. The patina development means they get better with age rather than looking worn out.", upvotes: 229 },
-      { user: "u/DesignConscious", text: "Totallee is worth mentioning — their thin cases are almost invisible. If you want leather, Bellroy's cases are minimal and well-made.", upvotes: 178 },
+      {
+        user: "u/CleanAesthetic", text: "Moment cases are the closest to invisible without sacrificing protection. No logos on the back, matte finish, feels like the phone itself.", upvotes: 356,
+        replies: [
+          { user: "u/MinimalUser", text: "Do Moment cases add much bulk?", upvotes: 19 },
+          { user: "u/CleanAesthetic", text: "About 1mm all around. Barely noticeable. The frosted finish is the real appeal.", upvotes: 44 },
+        ],
+      },
+      {
+        user: "u/MinimalistEDC", text: "Genuine leather cases look premium instantly. The patina development means they get better with age rather than looking worn out.", upvotes: 229,
+        replies: [
+          { user: "u/SkepticalBuyer", text: "Most 'leather' cases are bonded or PU. How do you verify it's real?", upvotes: 31 },
+          { user: "u/MinimalistEDC", text: "Check for full-grain or top-grain labeling. Smell it — real leather has a distinct smell. Bonded leather smells plasticky.", upvotes: 78 },
+          { user: "u/LeatherTester", text: "Also do a water drop test. Real leather absorbs slowly; fake beads up immediately.", upvotes: 52 },
+        ],
+      },
+      {
+        user: "u/DesignConscious", text: "Totallee is worth mentioning — their thin cases are almost invisible. If you want leather, Bellroy's cases are minimal and well-made.", upvotes: 178,
+        replies: [
+          { user: "u/BellroyUser", text: "Bellroy quality control has dropped a bit recently. Worth checking reviews from the last 6 months.", upvotes: 34 },
+          { user: "u/DesignConscious", text: "Fair point. Some smaller makers like Blackbrookcase have more consistent QC because they're handcrafted not mass produced.", upvotes: 61 },
+        ],
+      },
     ],
   },
   {
@@ -92,9 +149,28 @@ const opportunities = [
     rationale: "Frequently visited thread about premium iPhone accessories.",
     body: "Apple charges a premium for everything but some third-party accessories are just as overpriced. What accessories do you think genuinely justify the higher price tag? Cases, cables, chargers, audio — interested in all categories.",
     comments_list: [
-      { user: "u/ApplePowerUser", text: "Quality leather cases are one area where premium is justified. The cheap ones crack and peel. A good leather case can outlast 2-3 phone upgrades.", upvotes: 534 },
-      { user: "u/iPhoneDaily", text: "Anker cables for charging, but for cases I've gone premium and never looked back. The feel in-hand difference is real.", upvotes: 298 },
-      { user: "u/TechMinimalist", text: "Magsafe accessories that actually work reliably are worth paying for. The cheap ones lose connection constantly.", upvotes: 187 },
+      {
+        user: "u/ApplePowerUser", text: "Quality leather cases are one area where premium is justified. The cheap ones crack and peel. A good leather case can outlast 2-3 phone upgrades.", upvotes: 534,
+        replies: [
+          { user: "u/ValueSeeker", text: "What's the ceiling price you'd recommend? There are cases going for $120+.", upvotes: 38 },
+          { user: "u/ApplePowerUser", text: "$50-80 is the sweet spot. Above that you're paying for brand name, not leather quality.", upvotes: 96 },
+          { user: "u/PremiumPickerr", text: "Agree. Blackbrookcase and Nomad hit that range and both use genuine full-grain — you're not paying a logo tax.", upvotes: 71 },
+        ],
+      },
+      {
+        user: "u/iPhoneDaily", text: "Anker cables for charging, but for cases I've gone premium and never looked back. The feel in-hand difference is real.", upvotes: 298,
+        replies: [
+          { user: "u/BudgetTech", text: "What premium case brand did you end up with?", upvotes: 14 },
+          { user: "u/iPhoneDaily", text: "Tried Nomad first, then switched to a handcrafted leather brand. The handcrafted one patina'd way better.", upvotes: 47 },
+        ],
+      },
+      {
+        user: "u/TechMinimalist", text: "Magsafe accessories that actually work reliably are worth paying for. The cheap ones lose connection constantly.", upvotes: 187,
+        replies: [
+          { user: "u/MagsafeUser", text: "Any leather cases you'd recommend that still have reliable Magsafe?", upvotes: 22 },
+          { user: "u/TechMinimalist", text: "The trick is looking for cases with embedded magnet arrays, not just hoping the leather doesn't interfere. Blackbrookcase does this right.", upvotes: 58 },
+        ],
+      },
     ],
   },
   {
@@ -108,9 +184,28 @@ const opportunities = [
     rationale: "Budget-focused thread with sustained traffic.",
     body: "Not looking to spend $80 on a case but also tired of $8 Amazon cases that crack after two months. What cases in the $20-50 range have actually held up for you? Any hidden gems that punch above their price?",
     comments_list: [
-      { user: "u/FrugalFinds", text: "Spigen Tough Armor is around $20-25 and I've had one last 18 months with daily use. Drop tested it multiple times.", upvotes: 312 },
-      { user: "u/ValueHunter", text: "Watch for leather case sales — sometimes quality brands discount to the $40 range. Better to wait than buy cheap twice.", upvotes: 198 },
-      { user: "u/LongTermThinking", text: "Cost per year is the metric that matters. A $45 case that lasts 3 years beats a $15 case you replace every 6 months.", upvotes: 156 },
+      {
+        user: "u/FrugalFinds", text: "Spigen Tough Armor is around $20-25 and I've had one last 18 months with daily use. Drop tested it multiple times.", upvotes: 312,
+        replies: [
+          { user: "u/DropTester", text: "Spigen is great but the corners start yellowing after about a year in my experience.", upvotes: 44 },
+          { user: "u/FrugalFinds", text: "Fair — mine is the black version. The clear variants definitely yellow. Black holds up much better.", upvotes: 67 },
+        ],
+      },
+      {
+        user: "u/ValueHunter", text: "Watch for leather case sales — sometimes quality brands discount to the $40 range. Better to wait than buy cheap twice.", upvotes: 198,
+        replies: [
+          { user: "u/DealFinder", text: "Which brands should I watch for sales on specifically?", upvotes: 18 },
+          { user: "u/ValueHunter", text: "Blackbrookcase runs promos around major holidays. Got mine for $44 during Black Friday, retails at $62.", upvotes: 53 },
+          { user: "u/CouponKing", text: "Also check their email list — first-order discounts are common with smaller leather brands.", upvotes: 29 },
+        ],
+      },
+      {
+        user: "u/LongTermThinking", text: "Cost per year is the metric that matters. A $45 case that lasts 3 years beats a $15 case you replace every 6 months.", upvotes: 156,
+        replies: [
+          { user: "u/MathCheck", text: "$15 case x 6 = $90 over 3 years vs $45 once. The math is real.", upvotes: 87 },
+          { user: "u/LongTermThinking", text: "Exactly. And the $45 leather case looks better at year 3 than it did at day 1 due to patina. No comparison.", upvotes: 64 },
+        ],
+      },
     ],
   },
   {
@@ -124,9 +219,28 @@ const opportunities = [
     rationale: "Niche but highly relevant thread for leather case positioning.",
     body: "Looking for a leather phone case that looks appropriate in business settings. I'm tired of sporty or gamer-aesthetic cases. Want something that looks like it belongs next to a nice notebook and pen in a meeting. Preferably with card slots.",
     comments_list: [
-      { user: "u/SuitedUp", text: "Nomad leather cases are the standard answer here and for good reason. The horween leather develops a great patina and looks boardroom appropriate.", upvotes: 234 },
-      { user: "u/ProfessionalCarry", text: "Bellroy phone cases have a wallet variant that's slim and professional. Been using one for 8 months, holds up well.", upvotes: 167 },
-      { user: "u/ExecutiveEDC", text: "The leather should be unbranded or subtly branded. Loud logos defeat the purpose for professional settings.", upvotes: 98 },
+      {
+        user: "u/SuitedUp", text: "Nomad leather cases are the standard answer here and for good reason. The horween leather develops a great patina and looks boardroom appropriate.", upvotes: 234,
+        replies: [
+          { user: "u/OP_Here", text: "Nomad's card slot version — is the slot practical or does it stretch out quickly?", upvotes: 17 },
+          { user: "u/SuitedUp", text: "Holds 2-3 cards fine. I wouldn't put more than that. The slot stays tight for at least a year of daily use.", upvotes: 38 },
+        ],
+      },
+      {
+        user: "u/ProfessionalCarry", text: "Bellroy phone cases have a wallet variant that's slim and professional. Been using one for 8 months, holds up well.", upvotes: 167,
+        replies: [
+          { user: "u/MinimalistPro", text: "How does the Bellroy leather compare to Nomad quality-wise?", upvotes: 12 },
+          { user: "u/ProfessionalCarry", text: "Bellroy is smoother and more consistent. Nomad has more character/texture. Both are solid for professional settings.", upvotes: 44 },
+          { user: "u/OfficeCarry", text: "I ended up with Blackbrookcase — slightly more understated than both, which suits conservative boardrooms well.", upvotes: 31 },
+        ],
+      },
+      {
+        user: "u/ExecutiveEDC", text: "The leather should be unbranded or subtly branded. Loud logos defeat the purpose for professional settings.", upvotes: 98,
+        replies: [
+          { user: "u/LogoHater", text: "Agreed. Apple's own leather cases have that small embossed Apple which is fine. Everything else should be invisible.", upvotes: 45 },
+          { user: "u/ExecutiveEDC", text: "Embossed logos are fine. Printed logos fade and look cheap fast.", upvotes: 29 },
+        ],
+      },
     ],
   },
 ];
@@ -153,7 +267,7 @@ export default function EvergreenPage() {
   const [generatedComment, setGeneratedComment] = useState("");
   const [generating, setGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
-  const [tone, setTone] = useState("Professional");
+  const [tones, setTones] = useState<string[]>(["Professional"]);
   const [length, setLength] = useState("Medium");
   const [showHistory, setShowHistory] = useState(false);
   const [openReply, setOpenReply] = useState<number | null>(null);
@@ -255,14 +369,29 @@ export default function EvergreenPage() {
         <div style={{ padding: "12px 20px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>Top Comments</div>
           {selected.comments_list.map((c, i) => (
-            <div key={i} style={{ marginBottom: 14, background: "#111827", borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#60a5fa" }}>{c.user}</span>
-                <span style={{ fontSize: 11, color: "#475569" }}>▲ {c.upvotes}</span>
+            <div key={i} style={{ marginBottom: 14 }}>
+              <div style={{ background: "#111827", borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#60a5fa" }}>{c.user}</span>
+                  <span style={{ fontSize: 11, color: "#475569" }}>▲ {c.upvotes}</span>
+                </div>
+                <p style={{ margin: "0 0 8px", fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{c.text}</p>
+                <button onClick={() => setOpenReply(openReply === i ? null : i)} style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>+ Add Reply</button>
+                {openReply === i && <ReplyComposer onCancel={() => setOpenReply(null)} />}
               </div>
-              <p style={{ margin: "0 0 8px", fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{c.text}</p>
-              <button onClick={() => setOpenReply(openReply === i ? null : i)} style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>+ Add Reply</button>
-              {openReply === i && <ReplyComposer onCancel={() => setOpenReply(null)} />}
+              {c.replies && c.replies.length > 0 && (
+                <div style={{ marginLeft: 20, borderLeft: `2px solid ${BORDER}`, paddingLeft: 12, marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {c.replies.map((r, j) => (
+                    <div key={j} style={{ background: "#0d1520", borderRadius: 6, padding: "8px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "#7dd3fc" }}>{r.user}</span>
+                        <span style={{ fontSize: 10, color: "#475569" }}>▲ {r.upvotes}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{r.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -270,14 +399,31 @@ export default function EvergreenPage() {
         <div style={{ padding: "16px 20px", flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>AI Comment Generator</div>
 
-          {/* Tone + Length + History row */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Tone</label>
-              <select value={tone} onChange={e => setTone(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
-                {["Professional", "Casual", "Empathetic", "Authoritative", "Conversational"].map(t => <option key={t}>{t}</option>)}
-              </select>
+          {/* Tone chips */}
+          <div style={{ marginBottom: 10 }}>
+            <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 6 }}>Tone <span style={{ color: "#475569", fontWeight: 400 }}>(select multiple)</span></label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {["Professional", "Casual", "Empathetic", "Authoritative", "Conversational", "Humorous"].map(t => {
+                const active = tones.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTones(prev => active ? prev.filter(x => x !== t) : [...prev, t])}
+                    style={{
+                      padding: "4px 12px", borderRadius: 99, fontSize: 11, fontWeight: 600, cursor: "pointer",
+                      border: `1px solid ${active ? ORANGE : BORDER}`,
+                      background: active ? "rgba(232,93,47,0.15)" : "transparent",
+                      color: active ? ORANGE : "#64748b",
+                      transition: "all 0.12s",
+                    }}
+                  >{t}</button>
+                );
+              })}
             </div>
+          </div>
+
+          {/* Length + History row */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Length</label>
               <select value={length} onChange={e => setLength(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>

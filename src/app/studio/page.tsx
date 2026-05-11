@@ -22,9 +22,28 @@ const opportunities = [
     aiCited: true,
     body: "I moved out of my apartment 6 weeks ago and my landlord still hasn't returned my $2,400 security deposit. I left the place spotless — I even hired professional cleaners. They're now claiming 'excessive wear and tear' but haven't sent any itemized list. I'm in California. What are my options here? Can I take them to small claims court? Is there a time limit on when they have to return it?",
     comments_list: [
-      { user: "u/LegalEagle99", text: "In California, landlords must return the deposit within 21 days. Since it's been 6 weeks, they're already in violation. You can sue for 2x the deposit amount as a penalty.", upvotes: 156 },
-      { user: "u/TenantRights_CA", text: "Document everything — texts, emails, photos of the unit when you left. Small claims court in CA handles up to $10k and you don't need a lawyer.", upvotes: 89 },
-      { user: "u/MovedOutLastYear", text: "This happened to me too. I sent a demand letter first via certified mail giving them 10 days to respond. They caved immediately.", upvotes: 44 },
+      {
+        user: "u/LegalEagle99", text: "In California, landlords must return the deposit within 21 days. Since it's been 6 weeks, they're already in violation. You can sue for 2x the deposit amount as a penalty.", upvotes: 156,
+        replies: [
+          { user: "u/OP_Here", text: "Wait, 2x the deposit? So I could potentially get $4,800 back?", upvotes: 34 },
+          { user: "u/LegalEagle99", text: "Correct — Civil Code 1950.5 allows for statutory damages up to 2x if bad faith is proven. Document everything.", upvotes: 61 },
+        ],
+      },
+      {
+        user: "u/TenantRights_CA", text: "Document everything — texts, emails, photos of the unit when you left. Small claims court in CA handles up to $10k and you don't need a lawyer.", upvotes: 89,
+        replies: [
+          { user: "u/FirstTimeRenter", text: "Does this apply if the lease ended naturally vs early termination?", upvotes: 12 },
+          { user: "u/TenantRights_CA", text: "Yes, deposit rules apply regardless of how the tenancy ended.", upvotes: 28 },
+          { user: "u/CALegalAid", text: "Also check if your city has local tenant protections — some go beyond state law.", upvotes: 19 },
+        ],
+      },
+      {
+        user: "u/MovedOutLastYear", text: "This happened to me too. I sent a demand letter first via certified mail giving them 10 days to respond. They caved immediately.", upvotes: 44,
+        replies: [
+          { user: "u/OP_Here", text: "Where did you get the demand letter template?", upvotes: 8 },
+          { user: "u/MovedOutLastYear", text: "r/legaladvice wiki has a good one, or just Google 'California security deposit demand letter'.", upvotes: 22 },
+        ],
+      },
     ],
   },
   {
@@ -35,9 +54,27 @@ const opportunities = [
     aiCited: false,
     body: "I got served yesterday with a lawsuit from a company called 'Midland Credit Management' for $3,200 on an old Chase credit card. I don't even remember this debt — it's from like 2018. I have 30 days to respond. Do I actually have to show up? Can they garnish my wages? I'm kind of panicking.",
     comments_list: [
-      { user: "u/DebtFreeJourney", text: "You MUST respond or they'll get a default judgment. Check the statute of limitations in your state — if the debt is past it, that's your defense.", upvotes: 201 },
-      { user: "u/FinanceNerd_Alex", text: "Request debt validation in writing immediately. They have to prove they own the debt and the amount is correct.", upvotes: 77 },
-      { user: "u/BrokeButSmart", text: "Midland is a junk debt buyer. They buy old debts for pennies. Many people successfully fight these. Don't ignore it though.", upvotes: 55 },
+      {
+        user: "u/DebtFreeJourney", text: "You MUST respond or they'll get a default judgment. Check the statute of limitations in your state — if the debt is past it, that's your defense.", upvotes: 201,
+        replies: [
+          { user: "u/OP_Here", text: "I'm in Texas, debt is from 2018. Is SOL 4 years here?", upvotes: 15 },
+          { user: "u/DebtFreeJourney", text: "Texas SOL on written contracts is 4 years from last activity. If last payment was 2018 you may have a strong defense.", upvotes: 67 },
+          { user: "u/ConsumerLawNerd", text: "Also look into FDCPA violations — if they violated any rules during collection, you can countersue.", upvotes: 44 },
+        ],
+      },
+      {
+        user: "u/FinanceNerd_Alex", text: "Request debt validation in writing immediately. They have to prove they own the debt and the amount is correct.", upvotes: 77,
+        replies: [
+          { user: "u/OP_Here", text: "Can I send validation request even after being served?", upvotes: 9 },
+          { user: "u/FinanceNerd_Alex", text: "Yes but respond to the lawsuit first — validation request doesn't pause the court clock.", upvotes: 31 },
+        ],
+      },
+      {
+        user: "u/BrokeButSmart", text: "Midland is a junk debt buyer. They buy old debts for pennies. Many people successfully fight these. Don't ignore it though.", upvotes: 55,
+        replies: [
+          { user: "u/WonAgainstMidland", text: "Can confirm, beat them in court. They often can't produce original creditor documentation.", upvotes: 48 },
+        ],
+      },
     ],
   },
   {
@@ -48,9 +85,28 @@ const opportunities = [
     aiCited: true,
     body: "My business partner of 4 years wants to exit our LLC. We have about $180k in revenue and some equipment. Our operating agreement is pretty thin — we set it up ourselves on LegalZoom. He wants 50% of 'everything' but I've been doing 80% of the work for the past year. How do we value the business fairly? Do we need a lawyer or can we handle this ourselves?",
     comments_list: [
-      { user: "u/EntrepreneurMike", text: "Get a lawyer. Seriously. The cost of a botched buyout far exceeds attorney fees. Your operating agreement will govern this.", upvotes: 134 },
-      { user: "u/LLCExpert", text: "You need a formal business valuation and a buyout agreement. If your OA is silent on buyout terms, you're in murky territory.", upvotes: 62 },
-      { user: "u/BootstrappedCo", text: "We went through this. Mediator first, lawyer second. Saved the business relationship even though the partnership ended.", upvotes: 29 },
+      {
+        user: "u/EntrepreneurMike", text: "Get a lawyer. Seriously. The cost of a botched buyout far exceeds attorney fees. Your operating agreement will govern this.", upvotes: 134,
+        replies: [
+          { user: "u/OP_Here", text: "What kind of lawyer specifically — business attorney or transactional?", upvotes: 11 },
+          { user: "u/EntrepreneurMike", text: "Business transactional attorney. Look for someone who handles M&A or small business exits specifically.", upvotes: 38 },
+        ],
+      },
+      {
+        user: "u/LLCExpert", text: "You need a formal business valuation and a buyout agreement. If your OA is silent on buyout terms, you're in murky territory.", upvotes: 62,
+        replies: [
+          { user: "u/SoloFounder22", text: "How much does a formal valuation typically cost for a $180k revenue business?", upvotes: 7 },
+          { user: "u/LLCExpert", text: "Anywhere from $2k–$8k depending on complexity. Worth every dollar vs. a disputed exit.", upvotes: 25 },
+          { user: "u/AccountantHere", text: "You can also use an earnings multiplier method (EBITDA x 2-4) as a cheaper starting point.", upvotes: 17 },
+        ],
+      },
+      {
+        user: "u/BootstrappedCo", text: "We went through this. Mediator first, lawyer second. Saved the business relationship even though the partnership ended.", upvotes: 29,
+        replies: [
+          { user: "u/OP_Here", text: "Did mediation actually hold up legally?", upvotes: 5 },
+          { user: "u/BootstrappedCo", text: "Yes, mediator drafted a binding agreement that both parties signed. Lawyer then reviewed it.", upvotes: 18 },
+        ],
+      },
     ],
   },
   {
@@ -61,9 +117,28 @@ const opportunities = [
     aiCited: false,
     body: "Started a new job 2 weeks ago, everything seemed fine. Today my manager called me into a meeting with HR and said I was being let go for 'not being a culture fit.' No warning, no PIP. I'm 47 years old. I'm wondering if there's something more going on here. I live in an at-will state. Is there anything I can do or is this just how it is?",
     comments_list: [
-      { user: "u/HRInsider", text: "'Culture fit' is sometimes used as a pretext. If you're over 40, ADEA protections apply. Consider consulting an employment attorney — many do free consultations.", upvotes: 445 },
-      { user: "u/WorkplaceRights", text: "Document everything you remember about your tenure, conversations, feedback. If there's a pattern of older workers being let go, that's relevant.", upvotes: 187 },
-      { user: "u/JustFiredToo", text: "Same thing happened to me at 52. I consulted an employment lawyer — they found a pattern of age-related terminations. Worth looking into.", upvotes: 98 },
+      {
+        user: "u/HRInsider", text: "'Culture fit' is sometimes used as a pretext. If you're over 40, ADEA protections apply. Consider consulting an employment attorney — many do free consultations.", upvotes: 445,
+        replies: [
+          { user: "u/OP_Here", text: "What would I need to prove age discrimination though?", upvotes: 22 },
+          { user: "u/HRInsider", text: "Disparate impact evidence — e.g. if most people let go under 'culture fit' are 40+. Discovery would reveal hiring/firing patterns.", upvotes: 87 },
+          { user: "u/EmploymentAttorney", text: "Also check if they immediately hired someone younger for the same role. That's often the smoking gun.", upvotes: 134 },
+        ],
+      },
+      {
+        user: "u/WorkplaceRights", text: "Document everything you remember about your tenure, conversations, feedback. If there's a pattern of older workers being let go, that's relevant.", upvotes: 187,
+        replies: [
+          { user: "u/OP_Here", text: "Should I reach out to other ex-employees?", upvotes: 14 },
+          { user: "u/WorkplaceRights", text: "Yes, but don't do it in a way that could be seen as coordinating — just have genuine conversations.", upvotes: 39 },
+        ],
+      },
+      {
+        user: "u/JustFiredToo", text: "Same thing happened to me at 52. I consulted an employment lawyer — they found a pattern of age-related terminations. Worth looking into.", upvotes: 98,
+        replies: [
+          { user: "u/OP_Here", text: "How did that turn out for you?", upvotes: 19 },
+          { user: "u/JustFiredToo", text: "Settled for 8 months salary. Can't share more details but definitely pursue it if you have even a slight feeling something was off.", upvotes: 76 },
+        ],
+      },
     ],
   },
   {
@@ -74,9 +149,27 @@ const opportunities = [
     aiCited: false,
     body: "My husband told me last night he wants a divorce. We've been married 11 years, have 2 kids (8 and 11), and co-own a landscaping business with about $400k in assets. I have no idea where to even start. Do I get a lawyer first? Do we try mediation? I'm terrified about the business and custody.",
     comments_list: [
-      { user: "u/DivorceSupport", text: "Get your own attorney before agreeing to anything. Especially with a shared business — you need someone protecting your interests from day one.", upvotes: 312 },
-      { user: "u/FamilyLawPara", text: "Start gathering financial documents now: tax returns, bank statements, business financials. You'll need all of this.", upvotes: 189 },
-      { user: "u/WentThroughThis", text: "Mediation is great when both parties are cooperative. Get a lawyer first to understand your rights, then decide on mediation.", upvotes: 77 },
+      {
+        user: "u/DivorceSupport", text: "Get your own attorney before agreeing to anything. Especially with a shared business — you need someone protecting your interests from day one.", upvotes: 312,
+        replies: [
+          { user: "u/OP_Here", text: "He's suggesting we use one attorney to save money. Is that okay?", upvotes: 28 },
+          { user: "u/DivorceSupport", text: "Absolutely not. One attorney can only represent one party. Get your own counsel — the 'savings' can cost you enormously.", upvotes: 119 },
+          { user: "u/FamilyLawPara", text: "What she said. One attorney for both is a massive red flag, especially with shared business assets.", upvotes: 67 },
+        ],
+      },
+      {
+        user: "u/FamilyLawPara", text: "Start gathering financial documents now: tax returns, bank statements, business financials. You'll need all of this.", upvotes: 189,
+        replies: [
+          { user: "u/OP_Here", text: "He controls most of the business accounts. Can he hide assets?", upvotes: 16 },
+          { user: "u/FamilyLawPara", text: "During discovery, both sides must disclose all assets under oath. Hiding them is contempt of court. Your lawyer can also subpoena records.", upvotes: 55 },
+        ],
+      },
+      {
+        user: "u/WentThroughThis", text: "Mediation is great when both parties are cooperative. Get a lawyer first to understand your rights, then decide on mediation.", upvotes: 77,
+        replies: [
+          { user: "u/MediatorHere", text: "Even in mediation, you can have your own attorney review any agreement before signing. Don't skip that step.", upvotes: 41 },
+        ],
+      },
     ],
   },
   {
@@ -87,9 +180,28 @@ const opportunities = [
     aiCited: false,
     body: "Got a CP2000 notice saying I under-reported income by $28k. The income they're referencing is from a 1099 I already reported — it's right there on my return. I think they just matched it wrong. The notice says I have 60 days to respond. Should I try to handle this myself or hire someone?",
     comments_list: [
-      { user: "u/TaxProHere", text: "CP2000 is a proposed change, not a bill. Respond in writing with documentation showing you already reported it. Include the relevant line from your return.", upvotes: 198 },
-      { user: "u/CPAAdvice", text: "If you have documentation, this is straightforward to dispute. Send certified mail, keep copies of everything.", upvotes: 91 },
-      { user: "u/IRSExperience", text: "I had the exact same issue. Sent a letter with my 1040 line item highlighted and a copy of the 1099. Resolved in 6 weeks.", upvotes: 43 },
+      {
+        user: "u/TaxProHere", text: "CP2000 is a proposed change, not a bill. Respond in writing with documentation showing you already reported it. Include the relevant line from your return.", upvotes: 198,
+        replies: [
+          { user: "u/OP_Here", text: "Do I respond via the portal or certified mail?", upvotes: 11 },
+          { user: "u/TaxProHere", text: "Both if possible. Certified mail creates a paper trail. The portal is faster but sometimes has issues.", upvotes: 44 },
+          { user: "u/IRSExperience", text: "Always certified mail with return receipt. You need proof of delivery if it ever escalates.", upvotes: 32 },
+        ],
+      },
+      {
+        user: "u/CPAAdvice", text: "If you have documentation, this is straightforward to dispute. Send certified mail, keep copies of everything.", upvotes: 91,
+        replies: [
+          { user: "u/OP_Here", text: "Should I hire a CPA or can I handle this myself?", upvotes: 8 },
+          { user: "u/CPAAdvice", text: "If the documentation is clear-cut, you can handle it yourself. If they push back after your response, then hire someone.", upvotes: 29 },
+        ],
+      },
+      {
+        user: "u/IRSExperience", text: "I had the exact same issue. Sent a letter with my 1040 line item highlighted and a copy of the 1099. Resolved in 6 weeks.", upvotes: 43,
+        replies: [
+          { user: "u/SameProblem", text: "How long did it actually take to resolve after you sent the letter?", upvotes: 6 },
+          { user: "u/IRSExperience", text: "About 6 weeks from when they received it. The IRS is slow but they do process these correctly when you give them clear documentation.", upvotes: 21 },
+        ],
+      },
     ],
   },
 ];
@@ -157,7 +269,7 @@ export default function StudioPage() {
   const [generatedComment, setGeneratedComment] = useState("");
   const [generating, setGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
-  const [tone, setTone] = useState("Professional");
+  const [tones, setTones] = useState<string[]>(["Professional"]);
   const [length, setLength] = useState("Medium");
   const [rankToggle, setRankToggle] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -264,19 +376,35 @@ export default function StudioPage() {
         <div style={{ padding: "12px 20px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>Top Comments</div>
           {selected.comments_list.map((c, i) => (
-            <div key={i} style={{ marginBottom: 14, background: "#111827", borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#60a5fa" }}>{c.user}</span>
-                <span style={{ fontSize: 11, color: "#475569" }}>▲ {c.upvotes}</span>
+            <div key={i} style={{ marginBottom: 14 }}>
+              <div style={{ background: "#111827", borderRadius: 8, padding: "10px 12px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#60a5fa" }}>{c.user}</span>
+                  <span style={{ fontSize: 11, color: "#475569" }}>▲ {c.upvotes}</span>
+                </div>
+                <p style={{ margin: "0 0 8px", fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{c.text}</p>
+                <button
+                  onClick={() => setOpenReply(openReply === i ? null : i)}
+                  style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}
+                >
+                  + Add Reply
+                </button>
+                {openReply === i && <ReplyComposer onCancel={() => setOpenReply(null)} />}
               </div>
-              <p style={{ margin: "0 0 8px", fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{c.text}</p>
-              <button
-                onClick={() => setOpenReply(openReply === i ? null : i)}
-                style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}
-              >
-                + Add Reply
-              </button>
-              {openReply === i && <ReplyComposer onCancel={() => setOpenReply(null)} />}
+              {/* Nested replies */}
+              {c.replies && c.replies.length > 0 && (
+                <div style={{ marginLeft: 20, borderLeft: `2px solid ${BORDER}`, paddingLeft: 12, marginTop: 4, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {c.replies.map((r, j) => (
+                    <div key={j} style={{ background: "#0d1520", borderRadius: 6, padding: "8px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "#7dd3fc" }}>{r.user}</span>
+                        <span style={{ fontSize: 10, color: "#475569" }}>▲ {r.upvotes}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{r.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -285,14 +413,31 @@ export default function StudioPage() {
         <div style={{ padding: "16px 20px", flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>AI Comment Generator</div>
 
-          {/* Tone + Length + History row */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Tone</label>
-              <select value={tone} onChange={(e) => setTone(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
-                {["Professional", "Casual", "Empathetic", "Authoritative", "Conversational"].map(t => <option key={t}>{t}</option>)}
-              </select>
+          {/* Tone chips */}
+          <div style={{ marginBottom: 10 }}>
+            <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 6 }}>Tone <span style={{ color: "#475569", fontWeight: 400 }}>(select multiple)</span></label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {["Professional", "Casual", "Empathetic", "Authoritative", "Conversational", "Humorous"].map(t => {
+                const active = tones.includes(t);
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTones(prev => active ? prev.filter(x => x !== t) : [...prev, t])}
+                    style={{
+                      padding: "4px 12px", borderRadius: 99, fontSize: 11, fontWeight: 600, cursor: "pointer",
+                      border: `1px solid ${active ? ORANGE : BORDER}`,
+                      background: active ? "rgba(232,93,47,0.15)" : "transparent",
+                      color: active ? ORANGE : "#64748b",
+                      transition: "all 0.12s",
+                    }}
+                  >{t}</button>
+                );
+              })}
             </div>
+          </div>
+
+          {/* Length + History row */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Length</label>
               <select value={length} onChange={(e) => setLength(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
