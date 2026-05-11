@@ -194,8 +194,8 @@ export default function StudioPage() {
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#0a0f1a", color: "#e2e8f0", overflow: "hidden" }}>
       <Sidebar activeNav="Live Opportunities" />
 
-      {/* Center: Card List — fixed width so right pane can be 50% */}
-      <div style={{ width: 360, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}` }}>
+      {/* Center: Card List — flex 1 = 50% */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, minWidth: 0 }}>
         {/* Header */}
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, background: "#0d1520" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 0 }}>
@@ -203,16 +203,11 @@ export default function StudioPage() {
               <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Live Opportunities</h2>
               <p style={{ margin: "2px 0 0", fontSize: 12, color: "#64748b" }}>6 high-relevance threads found in the last 24h</p>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <select style={{ background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
-                <option>Sort: Relevance</option>
-                <option>Sort: Newest</option>
-                <option>Sort: Upvotes</option>
-              </select>
-              <button style={{ background: ORANGE, color: "#fff", border: "none", padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                + New Scan
-              </button>
-            </div>
+            <select style={{ background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
+              <option>Sort: Relevance</option>
+              <option>Sort: Newest</option>
+              <option>Sort: Upvotes</option>
+            </select>
           </div>
         </div>
 
@@ -251,7 +246,7 @@ export default function StudioPage() {
         </div>
       </div>
 
-      {/* Right Detail Pane — 50% of remaining space */}
+      {/* Right Detail Pane — flex 1 = 50% */}
       <div style={{ flex: 1, background: DETAIL_BG, display: "flex", flexDirection: "column", overflowY: "auto", minWidth: 0 }}>
         {/* Post */}
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}` }}>
@@ -290,25 +285,8 @@ export default function StudioPage() {
         <div style={{ padding: "16px 20px", flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>AI Comment Generator</div>
 
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe your angle, mention a product, or leave blank for auto-detect..."
-            style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 10, lineHeight: 1.5, boxSizing: "border-box", height: 72 }}
-          />
-
-          {/* Generated comment output */}
-          <div style={{ position: "relative", marginBottom: 12 }}>
-            <textarea
-              readOnly
-              value={generatedComment}
-              placeholder="Generated comment will appear here..."
-              style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", lineHeight: 1.5, boxSizing: "border-box", height: 100 }}
-            />
-          </div>
-
-          {/* Tone + Length + History */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          {/* Tone + Length + History row */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Tone</label>
               <select value={tone} onChange={(e) => setTone(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
@@ -333,16 +311,10 @@ export default function StudioPage() {
                 <div style={{ position: "absolute", bottom: "calc(100% + 6px)", right: 0, background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 8, padding: 8, zIndex: 50, width: 260, boxShadow: "0 8px 24px rgba(0,0,0,0.5)" }}>
                   <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Previous Versions</div>
                   {COMMENT_HISTORY.map(h => (
-                    <div
-                      key={h.version}
-                      onClick={() => { setGeneratedComment(h.text); setHasGenerated(true); setShowHistory(false); }}
-                      style={{ background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "10px 12px", cursor: "pointer" }}
-                    >
+                    <div key={h.version} onClick={() => { setGeneratedComment(h.text); setHasGenerated(true); setShowHistory(false); }} style={{ background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "10px 12px", cursor: "pointer" }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 3 }}>Version {h.version}</div>
                       <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>{h.date}</div>
-                      <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
-                        {h.text}
-                      </div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{h.text}</div>
                     </div>
                   ))}
                 </div>
@@ -357,25 +329,36 @@ export default function StudioPage() {
             style={{ width: "100%", background: generating ? "#4a2a1a" : ORANGE, color: generating ? "#fdba74" : "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "background 0.2s" }}
           >
             {generating ? (
-              <>
-                <span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                Generating...
-              </>
+              <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Generating...</>
             ) : hasGenerated ? "✦ Regenerate" : "✦ Generate Comment"}
           </button>
-
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-          {/* Rank My Comment */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, background: "#111827", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "10px 14px" }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>Rank My Comment</div>
-              <div style={{ fontSize: 11, color: "#64748b" }}>Score before submitting</div>
+          {/* Generated comment output */}
+          <textarea
+            readOnly
+            value={generatedComment}
+            placeholder="Generated comment will appear here..."
+            style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", lineHeight: 1.5, boxSizing: "border-box", height: 100, marginBottom: hasGenerated ? 8 : 12 }}
+          />
+
+          {/* Refine row — only shown after generation */}
+          {hasGenerated && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <input
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="Add instructions to refine..."
+                style={{ flex: 1, background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "8px 12px", borderRadius: 8, fontSize: 12, outline: "none" }}
+              />
+              <button
+                onClick={handleGenerate}
+                style={{ flex: 1, background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+              >
+                ↻ Regenerate
+              </button>
             </div>
-            <div onClick={() => setRankToggle(!rankToggle)} style={{ width: 40, height: 22, borderRadius: 99, cursor: "pointer", position: "relative", background: rankToggle ? ORANGE : "#334155", transition: "background 0.2s" }}>
-              <div style={{ position: "absolute", top: 3, left: rankToggle ? 20 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-            </div>
-          </div>
+          )}
 
           <button
             onClick={() => setShowModal(true)}
@@ -409,6 +392,17 @@ export default function StudioPage() {
                 <span style={{ background: tier === t.value ? ORANGE : "#1e3a5f", color: tier === t.value ? "#fff" : "#60a5fa", padding: "3px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, flexShrink: 0, marginLeft: 10 }}>{t.credits}</span>
               </div>
             ))}
+
+            {/* Rank My Comment toggle */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "10px 14px" }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>Rank My Comment</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>Add upvote boosts to increase visibility</div>
+              </div>
+              <div onClick={() => setRankToggle(!rankToggle)} style={{ width: 40, height: 22, borderRadius: 99, cursor: "pointer", position: "relative", background: rankToggle ? ORANGE : "#334155", transition: "background 0.2s", flexShrink: 0 }}>
+                <div style={{ position: "absolute", top: 3, left: rankToggle ? 20 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+              </div>
+            </div>
 
             {/* Boost qty — only shown when Rank My Comment is on */}
             {rankToggle && (

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import NotificationBell from "./NotificationBell";
 
 export const ORANGE = "#e85d2f";
 export const SIDEBAR_BG = "#1e2a3b";
@@ -43,8 +44,9 @@ export default function Sidebar({ activeNav }: SidebarProps) {
       {/* Logo */}
       <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-          <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6 }} />
-          <span style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>Reddit Studio</span>
+          <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6, flexShrink: 0 }} />
+          <span style={{ fontWeight: 700, fontSize: 15, color: "#fff", flex: 1 }}>Reddit Studio</span>
+          <NotificationBell />
         </div>
 
         {/* Project dropdown */}

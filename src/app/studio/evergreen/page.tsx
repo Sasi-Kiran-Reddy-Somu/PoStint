@@ -155,7 +155,6 @@ export default function EvergreenPage() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [tone, setTone] = useState("Professional");
   const [length, setLength] = useState("Medium");
-  const [rankToggle, setRankToggle] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [openReply, setOpenReply] = useState<number | null>(null);
   const historyRef = useRef<HTMLDivElement>(null);
@@ -270,9 +269,9 @@ export default function EvergreenPage() {
 
         <div style={{ padding: "16px 20px", flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>AI Comment Generator</div>
-          <textarea value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Describe your angle or leave blank for auto-detect..." rows={3} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 10, lineHeight: 1.5, boxSizing: "border-box" }} />
-          <textarea readOnly value={generatedComment} placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 12, lineHeight: 1.5, boxSizing: "border-box" }} />
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+
+          {/* Tone + Length + History row */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Tone</label>
               <select value={tone} onChange={e => setTone(e.target.value)} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "7px 10px", borderRadius: 6, fontSize: 12 }}>
@@ -302,19 +301,24 @@ export default function EvergreenPage() {
               )}
             </div>
           </div>
+
+          {/* Generate button */}
           <button onClick={handleGenerate} disabled={generating} style={{ width: "100%", background: generating ? "#4a2a1a" : ORANGE, color: generating ? "#fdba74" : "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            {generating ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Generating...</> : hasGenerated ? "✦ Regenerate" : "Generate Comment"}
+            {generating ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Generating...</> : hasGenerated ? "✦ Regenerate" : "✦ Generate Comment"}
           </button>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, background: "#111827", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "10px 14px" }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>Rank My Comment</div>
-              <div style={{ fontSize: 11, color: "#64748b" }}>Score before submitting</div>
+
+          {/* Output textarea */}
+          <textarea readOnly value={generatedComment} placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: hasGenerated ? 8 : 12, lineHeight: 1.5, boxSizing: "border-box" }} />
+
+          {/* Refine row — only shown after generation */}
+          {hasGenerated && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <input value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Add instructions to refine..." style={{ flex: 1, background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "8px 10px", borderRadius: 6, fontSize: 12, outline: "none" }} />
+              <button onClick={handleGenerate} style={{ flex: 1, background: "#162032", border: `1px solid ${ORANGE}`, color: ORANGE, padding: "8px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>↻ Regenerate</button>
             </div>
-            <div onClick={() => setRankToggle(!rankToggle)} style={{ width: 40, height: 22, borderRadius: 99, cursor: "pointer", position: "relative", background: rankToggle ? ORANGE : "#334155", transition: "background 0.2s" }}>
-              <div style={{ position: "absolute", top: 3, left: rankToggle ? 20 : 3, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-            </div>
-          </div>
+          )}
+
           <button onClick={() => setShowModal(true)} style={{ width: "100%", background: "#162032", border: `1px solid ${ORANGE}`, color: ORANGE, padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
             <span>Create Task</span>
             <span style={{ background: ORANGE, color: "#fff", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700 }}>7.5 Credits</span>
