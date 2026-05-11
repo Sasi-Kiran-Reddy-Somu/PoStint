@@ -1,6 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Sidebar, { ORANGE, BORDER } from "@/components/studio/Sidebar";
+
+const MOCK_COMMENT = "Yeah breaking the magnetic ring is such a pain, especially from cleaning. I went with a leather case from Blackbrookcase and it's held up really well since there's no magnetic ring hardware to snap off. They do full-grain handcrafted leather starting under $50. Spigen is also solid if you want plastic/TPU range.";
+const COMMENT_HISTORY = [{ version: 1, date: "Apr 16, 2026 1:23 AM", text: MOCK_COMMENT }];
+
+function ReplyComposer({ onCancel }: { onCancel: () => void }) {
+  const [replyText, setReplyText] = useState("");
+  const [gap, setGap] = useState("1 hour");
+  return (
+    <div style={{ marginTop: 10, background: "#0d1520", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px" }}>
+      <textarea value={replyText} onChange={e => setReplyText(e.target.value)} placeholder="Write a reply..." rows={3} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "8px 10px", borderRadius: 6, fontSize: 12, resize: "none", outline: "none", boxSizing: "border-box", lineHeight: 1.5, marginBottom: 10 }} />
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6, fontWeight: 600 }}>Post reply after:</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {["1 hour", "2 hours", "6 hours", "12 hours"].map(g => (
+            <label key={g} style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 12, color: gap === g ? "#fff" : "#94a3b8" }}>
+              <input type="radio" name="evg-gap" value={g} checked={gap === g} onChange={() => setGap(g)} style={{ accentColor: ORANGE, cursor: "pointer" }} />{g}
+            </label>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 8 }}>
+        <button style={{ background: ORANGE, color: "#fff", border: "none", padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Generate Reply</button>
+        <button onClick={onCancel} style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
 
 const CARD_BG = "#111827";
 const DETAIL_BG = "#0f172a";
@@ -123,9 +150,28 @@ export default function EvergreenPage() {
   const [tier, setTier] = useState("tier2");
   const [scheduleDate, setScheduleDate] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [generatedComment, setGeneratedComment] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [tone, setTone] = useState("Professional");
   const [length, setLength] = useState("Medium");
   const [rankToggle, setRankToggle] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [openReply, setOpenReply] = useState<number | null>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (historyRef.current && !historyRef.current.contains(e.target as Node)) setShowHistory(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleGenerate = () => {
+    setGenerating(true);
+    setTimeout(() => { setGeneratedComment(MOCK_COMMENT); setGenerating(false); setHasGenerated(true); }, 1500);
+  };
 
   const filtered = filter === "High Traffic"
     ? opportunities.filter(o => o.upvotes > 2000)
@@ -137,8 +183,8 @@ export default function EvergreenPage() {
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#0a0f1a", color: "#e2e8f0", overflow: "hidden" }}>
       <Sidebar activeNav="Evergreen Opportunities" />
 
-      {/* Center */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, minWidth: 0 }}>
+      {/* Center — fixed width */}
+      <div style={{ width: 360, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}` }}>
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, background: "#0d1520" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
@@ -199,8 +245,8 @@ export default function EvergreenPage() {
         </div>
       </div>
 
-      {/* Right pane */}
-      <div style={{ width: 450, background: DETAIL_BG, display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "auto" }}>
+      {/* Right pane — 50% of remaining */}
+      <div style={{ flex: 1, background: DETAIL_BG, display: "flex", flexDirection: "column", overflowY: "auto", minWidth: 0 }}>
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ marginBottom: 10 }}><SubredditPill name={selected.subreddit} /></div>
           <h3 style={{ margin: "0 0 10px", fontSize: 14, fontWeight: 700, color: "#fff", lineHeight: 1.5 }}>{selected.title}</h3>
@@ -216,7 +262,8 @@ export default function EvergreenPage() {
                 <span style={{ fontSize: 11, color: "#475569" }}>▲ {c.upvotes}</span>
               </div>
               <p style={{ margin: "0 0 8px", fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>{c.text}</p>
-              <button style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>+ Add Reply</button>
+              <button onClick={() => setOpenReply(openReply === i ? null : i)} style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "4px 10px", borderRadius: 5, fontSize: 11, cursor: "pointer", fontWeight: 600 }}>+ Add Reply</button>
+              {openReply === i && <ReplyComposer onCancel={() => setOpenReply(null)} />}
             </div>
           ))}
         </div>
@@ -224,7 +271,7 @@ export default function EvergreenPage() {
         <div style={{ padding: "16px 20px", flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>AI Comment Generator</div>
           <textarea value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Describe your angle or leave blank for auto-detect..." rows={3} style={{ width: "100%", background: "#111827", border: `1px solid ${BORDER}`, color: "#e2e8f0", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 10, lineHeight: 1.5, boxSizing: "border-box" }} />
-          <textarea readOnly placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${BORDER}`, color: "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 12, lineHeight: 1.5, boxSizing: "border-box" }} />
+          <textarea readOnly value={generatedComment} placeholder="Generated comment will appear here..." rows={4} style={{ width: "100%", background: "#0a0f1a", border: `1px solid ${hasGenerated ? "#334155" : BORDER}`, color: hasGenerated ? "#e2e8f0" : "#475569", padding: "10px 12px", borderRadius: 8, fontSize: 12, resize: "none", outline: "none", marginBottom: 12, lineHeight: 1.5, boxSizing: "border-box" }} />
           <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>Tone</label>
@@ -238,8 +285,27 @@ export default function EvergreenPage() {
                 {["Short", "Medium", "Long"].map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
+            <div style={{ position: "relative" }} ref={historyRef}>
+              <label style={{ fontSize: 11, color: "#64748b", display: "block", marginBottom: 4 }}>History</label>
+              <button onClick={() => setShowHistory(h => !h)} style={{ background: "#111827", border: `1px solid ${showHistory ? ORANGE : BORDER}`, color: showHistory ? ORANGE : "#94a3b8", padding: "7px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer", height: 34 }}>History ▾</button>
+              {showHistory && (
+                <div style={{ position: "absolute", bottom: "calc(100% + 6px)", right: 0, background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 8, padding: 8, zIndex: 50, width: 260, boxShadow: "0 8px 24px rgba(0,0,0,0.5)" }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Previous Versions</div>
+                  {COMMENT_HISTORY.map(h => (
+                    <div key={h.version} onClick={() => { setGeneratedComment(h.text); setHasGenerated(true); setShowHistory(false); }} style={{ background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 6, padding: "10px 12px", cursor: "pointer" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 3 }}>Version {h.version}</div>
+                      <div style={{ fontSize: 11, color: "#64748b", marginBottom: 6 }}>{h.date}</div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{h.text}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          <button style={{ width: "100%", background: ORANGE, color: "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", marginBottom: 10 }}>Generate Comment</button>
+          <button onClick={handleGenerate} disabled={generating} style={{ width: "100%", background: generating ? "#4a2a1a" : ORANGE, color: generating ? "#fdba74" : "#fff", border: "none", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: generating ? "not-allowed" : "pointer", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            {generating ? <><span style={{ display: "inline-block", width: 14, height: 14, border: "2px solid #fdba74", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />Generating...</> : hasGenerated ? "✦ Regenerate" : "Generate Comment"}
+          </button>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, background: "#111827", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "10px 14px" }}>
             <div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>Rank My Comment</div>
