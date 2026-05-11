@@ -265,6 +265,7 @@ export default function StudioPage() {
   const [tier, setTier] = useState("tier1");
   const [scheduleDate, setScheduleDate] = useState("");
   const [boostQty, setBoostQty] = useState(5);
+  const [upvoteQty, setUpvoteQty] = useState(0);
   const [prompt, setPrompt] = useState("");
   const [generatedComment, setGeneratedComment] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -279,7 +280,7 @@ export default function StudioPage() {
   const BALANCE = 142;
   const TIER_CREDITS: Record<string, number> = { tier1: 10, tier2: 7.5, tier3: 5 };
   const baseCost = TIER_CREDITS[tier] ?? 10;
-  const totalCost = rankToggle ? baseCost + boostQty : baseCost;
+  const totalCost = (rankToggle ? baseCost + boostQty : baseCost) + upvoteQty * 0.2;
   const canAfford = totalCost <= BALANCE;
 
   // Close history dropdown on outside click
@@ -505,12 +506,36 @@ export default function StudioPage() {
             </div>
           )}
 
+          {/* Upvote boost */}
+          <div style={{ background: "#111827", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0", marginBottom: 6 }}>
+              Add Upvotes <span style={{ fontSize: 11, color: "#64748b", fontWeight: 400 }}>· 0.2 credits each</span>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {[0, 5, 10, 25, 50].map(q => (
+                <button
+                  key={q}
+                  onClick={() => setUpvoteQty(q)}
+                  style={{
+                    padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                    border: `1px solid ${upvoteQty === q ? ORANGE : BORDER}`,
+                    background: upvoteQty === q ? "rgba(232,93,47,0.15)" : "transparent",
+                    color: upvoteQty === q ? ORANGE : "#64748b",
+                  }}
+                >{q === 0 ? "None" : `+${q}`}</button>
+              ))}
+            </div>
+            {upvoteQty > 0 && (
+              <div style={{ fontSize: 11, color: "#64748b", marginTop: 6 }}>{upvoteQty} upvotes · {(upvoteQty * 0.2).toFixed(1)} credits</div>
+            )}
+          </div>
+
           <button
             onClick={() => setShowModal(true)}
             style={{ width: "100%", background: "#162032", border: `1px solid ${ORANGE}`, color: ORANGE, padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
           >
             <span>Create Task</span>
-            <span style={{ background: ORANGE, color: "#fff", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700 }}>7.5 Credits</span>
+            <span style={{ background: ORANGE, color: "#fff", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700 }}>{totalCost.toFixed(1)} Credits</span>
           </button>
         </div>
       </div>
@@ -579,7 +604,8 @@ export default function StudioPage() {
             <div style={{ background: "#0d1520", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 14 }}>
               <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>Tasks Summary</div>
               <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>1 main comment task</div>
-              {rankToggle && <div style={{ fontSize: 12, color: "#94a3b8" }}>{boostQty} upvote boost tasks</div>}
+              {rankToggle && <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 2 }}>{boostQty} rank boost tasks</div>}
+              {upvoteQty > 0 && <div style={{ fontSize: 12, color: "#94a3b8" }}>{upvoteQty} upvote tasks · {(upvoteQty * 0.2).toFixed(1)} credits</div>}
             </div>
 
             {/* Total + balance */}

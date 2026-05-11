@@ -269,6 +269,7 @@ export default function EvergreenPage() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [tones, setTones] = useState<string[]>(["Professional"]);
   const [length, setLength] = useState("Medium");
+  const [upvoteQty, setUpvoteQty] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [openReply, setOpenReply] = useState<number | null>(null);
   const historyRef = useRef<HTMLDivElement>(null);
@@ -465,9 +466,33 @@ export default function EvergreenPage() {
             </div>
           )}
 
+          {/* Upvote boost */}
+          <div style={{ background: "#111827", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0", marginBottom: 6 }}>
+              Add Upvotes <span style={{ fontSize: 11, color: "#64748b", fontWeight: 400 }}>· 0.2 credits each</span>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {[0, 5, 10, 25, 50].map(q => (
+                <button
+                  key={q}
+                  onClick={() => setUpvoteQty(q)}
+                  style={{
+                    padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                    border: `1px solid ${upvoteQty === q ? ORANGE : BORDER}`,
+                    background: upvoteQty === q ? "rgba(232,93,47,0.15)" : "transparent",
+                    color: upvoteQty === q ? ORANGE : "#64748b",
+                  }}
+                >{q === 0 ? "None" : `+${q}`}</button>
+              ))}
+            </div>
+            {upvoteQty > 0 && (
+              <div style={{ fontSize: 11, color: "#64748b", marginTop: 6 }}>{upvoteQty} upvotes · {(upvoteQty * 0.2).toFixed(1)} credits</div>
+            )}
+          </div>
+
           <button onClick={() => setShowModal(true)} style={{ width: "100%", background: "#162032", border: `1px solid ${ORANGE}`, color: ORANGE, padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
             <span>Create Task</span>
-            <span style={{ background: ORANGE, color: "#fff", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700 }}>7.5 Credits</span>
+            <span style={{ background: ORANGE, color: "#fff", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700 }}>{(7.5 + upvoteQty * 0.2).toFixed(1)} Credits</span>
           </button>
         </div>
       </div>

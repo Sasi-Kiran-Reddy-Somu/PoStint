@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { creditsToUsd } from "@/lib/utils";
 
 interface Task {
   id: string;
@@ -104,8 +103,8 @@ export default function TasksPage() {
                   <p className="text-sm text-slate-400 line-clamp-2">{briefPreview(task.brief)}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="text-xl font-bold text-red-400">{task.creditValue}</div>
-                  <div className="text-xs text-slate-500">{creditsToUsd(task.creditValue)}</div>
+                  <div className="text-xl font-bold text-red-400">{task.type === "upvote" ? 10 : task.creditValue}</div>
+                  <div className="text-xs text-slate-500">credits</div>
                   <Link href={`/tasks/${task.id}`}>
                     <Button size="sm" className="mt-2 bg-red-600 hover:bg-red-500">Open</Button>
                   </Link>

@@ -56,6 +56,7 @@ export default function CreatePostsPage() {
   const [showModal, setShowModal] = useState(false);
   const [tier, setTier] = useState("tier2");
   const [scheduleDate, setScheduleDate] = useState("");
+  const [upvoteQty, setUpvoteQty] = useState(0);
 
   const allSubs = [...SUBREDDITS, ...extraSubs.map(n => ({ name: n, score: 65, comments: "Avg 20 comments", wau: "—" }))];
 
@@ -254,6 +255,29 @@ export default function CreatePostsPage() {
               {/* Create tasks button */}
               {selected.size > 0 && (
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
+                  {/* Upvote boost */}
+                  <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, marginBottom: 6 }}>
+                      Add Upvotes per Post <span style={{ fontSize: 11, color: MUTED, fontWeight: 400 }}>· 0.2 credits each</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {[0, 5, 10, 25, 50].map(q => (
+                        <button
+                          key={q}
+                          onClick={() => setUpvoteQty(q)}
+                          style={{
+                            padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                            border: `1px solid ${upvoteQty === q ? ORANGE : BORDER}`,
+                            background: upvoteQty === q ? "rgba(232,93,47,0.15)" : "transparent",
+                            color: upvoteQty === q ? ORANGE : MUTED,
+                          }}
+                        >{q === 0 ? "None" : `+${q}`}</button>
+                      ))}
+                    </div>
+                    {upvoteQty > 0 && (
+                      <div style={{ fontSize: 11, color: MUTED, marginTop: 6 }}>{upvoteQty} upvotes × {selected.size} post{selected.size !== 1 ? "s" : ""} · {(upvoteQty * selected.size * 0.2).toFixed(1)} credits</div>
+                    )}
+                  </div>
                   <button
                     onClick={() => setShowModal(true)}
                     disabled={!hasGenerated}
@@ -267,7 +291,7 @@ export default function CreatePostsPage() {
                   >
                     <span>Create {selected.size} Task{selected.size !== 1 ? "s" : ""}</span>
                     <span style={{ background: hasGenerated ? ORANGE : "#334155", color: "#fff", padding: "3px 10px", borderRadius: 4, fontSize: 12, fontWeight: 700 }}>
-                      {creditCost} Credits
+                      {(creditCost + upvoteQty * selected.size * 0.2).toFixed(1)} Credits
                     </span>
                   </button>
                 </div>
