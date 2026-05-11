@@ -260,19 +260,30 @@ export default function CreatePostsPage() {
                     <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, marginBottom: 6 }}>
                       Add Upvotes per Post <span style={{ fontSize: 11, color: MUTED, fontWeight: 400 }}>· 0.2 credits each</span>
                     </div>
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                      {[0, 5, 10, 25, 50].map(q => (
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                      <input
+                        type="number"
+                        min={0}
+                        value={upvoteQty}
+                        onChange={e => setUpvoteQty(Math.max(0, parseInt(e.target.value) || 0))}
+                        style={{ width: 64, background: SURFACE2, border: `1px solid ${upvoteQty > 0 ? ORANGE : BORDER}`, color: TEXT, padding: "4px 8px", borderRadius: 6, fontSize: 12, outline: "none", textAlign: "center" }}
+                      />
+                      {[5, 10, 25, 50].map(q => (
                         <button
                           key={q}
                           onClick={() => setUpvoteQty(q)}
                           style={{
-                            padding: "4px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                            padding: "4px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",
                             border: `1px solid ${upvoteQty === q ? ORANGE : BORDER}`,
                             background: upvoteQty === q ? "rgba(232,93,47,0.15)" : "transparent",
                             color: upvoteQty === q ? ORANGE : MUTED,
                           }}
-                        >{q === 0 ? "None" : `+${q}`}</button>
+                        >+{q}</button>
                       ))}
+                      <button
+                        onClick={() => setUpvoteQty(0)}
+                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer", border: `1px solid ${upvoteQty === 0 ? ORANGE : BORDER}`, background: upvoteQty === 0 ? "rgba(232,93,47,0.15)" : "transparent", color: upvoteQty === 0 ? ORANGE : MUTED }}
+                      >None</button>
                     </div>
                     {upvoteQty > 0 && (
                       <div style={{ fontSize: 11, color: MUTED, marginTop: 6 }}>{upvoteQty} upvotes × {selected.size} post{selected.size !== 1 ? "s" : ""} · {(upvoteQty * selected.size * 0.2).toFixed(1)} credits</div>
