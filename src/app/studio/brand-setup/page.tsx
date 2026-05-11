@@ -114,7 +114,7 @@ function BrandBasicsTab({ data, onChange }: { data: BrandData; onChange: (d: Bra
           </select>
         </Field>
         <Field label="Positioning Notes">
-          <TextInput value={data.positioning} onChange={set("positioning") as (v: string) => void} placeholder="What to emphasize and avoid" />
+          <TextArea value={data.positioning} onChange={set("positioning") as (v: string) => void} placeholder="What to emphasize and what to avoid in Reddit comments..." rows={3} />
         </Field>
       </div>
     </div>
