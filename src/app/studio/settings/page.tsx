@@ -2,6 +2,16 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar, { ORANGE, BORDER, setSidebarUsername, setSidebarAvatar, getSidebarUsername, getSidebarAvatar } from "@/components/studio/Sidebar";
 
+const AVATAR_COLORS = [
+  "#e85d2f", "#6366f1", "#10b981", "#f59e0b",
+  "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6",
+];
+function avatarColorForName(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 const BG = "#0a0f1a";
 const SURFACE = "#1e2a3b";
 const SURFACE2 = "#162032";
@@ -64,20 +74,12 @@ function AccountTab() {
   const [website, setWebsite] = useState("https://blackbrookcase.com");
   const [theme, setTheme] = useState("dark");
   const [avatar, setAvatarState] = useState("");
-  const [animLogo, setAnimLogo] = useState(true);
-  const [hue, setHue] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setName(getSidebarUsername());
     setAvatarState(getSidebarAvatar());
   }, []);
-
-  useEffect(() => {
-    if (!animLogo) return;
-    const t = setInterval(() => setHue(h => (h + 1) % 360), 30);
-    return () => clearInterval(t);
-  }, [animLogo]);
 
   const INDUSTRIES = ["Consumer Electronics", "Fashion & Apparel", "Health & Beauty", "Food & Beverage", "Software & SaaS", "Finance", "Education", "Other"];
 
@@ -104,11 +106,13 @@ function AccountTab() {
 
       {/* Profile photo */}
       <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ position: "relative", flexShrink: 0 }}>
+        <div style={{ flexShrink: 0 }}>
           {avatar ? (
             <img src={avatar} alt="" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: `2px solid ${BORDER}` }} />
           ) : (
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: animLogo ? `hsl(${hue}, 70%, 50%)` : "#334155", border: `2px solid ${BORDER}`, transition: "background 0.1s" }} />
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: avatarColorForName(name), border: `2px solid ${BORDER}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: "#fff" }}>
+              {name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+            </div>
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -122,10 +126,7 @@ function AccountTab() {
               style={{ background: "transparent", border: `1px solid ${BORDER}`, color: MUTED2, padding: "7px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer" }}
             >Remove</button>}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <Toggle on={animLogo} onToggle={() => setAnimLogo(v => !v)} />
-            <span style={{ fontSize: 12, color: MUTED }}>Animated colour avatar (when no photo)</span>
-          </div>
+          <div style={{ fontSize: 12, color: MUTED }}>Avatar colour is based on your display name.</div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
         </div>
       </div>
