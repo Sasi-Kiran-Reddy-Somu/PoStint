@@ -201,18 +201,18 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {/* Logo */}
         <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 7, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#fff" stroke="none"/>
-              </svg>
-            </div>
+            <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 7, flexShrink: 0 }} />
             <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
             <button
               onClick={() => { setOnboardStep(0); setOnboarding(true); }}
               title="Product tour"
-              style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", borderRadius: 6, width: 26, height: 26, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-            >?</button>
+              style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", borderRadius: 6, width: 28, height: 28, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0 }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none"/>
+              </svg>
+            </button>
           </div>
 
           {/* Project dropdown */}
