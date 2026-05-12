@@ -8,13 +8,12 @@ export const BORDER = "#1f2d3d";
 
 const PROJECTS = ["Blackbrookcase", "Nomad Goods", "Bellroy UK"];
 
-// Main nav items — reordered, no Notifications, no Billing/Settings
 const NAV_ITEMS = [
-  { label: "My Tasks", badge: null, info: null },
+  { label: "My Tasks", badge: null, info: "All tasks you've submitted — track status, credits spent, and whether comments are live." },
   { label: "Live Opportunities", badge: "6", info: "Reddit threads that AI engines are actively citing right now for your tracked prompts along with new posts matching your keywords. Best acted on quickly." },
   { label: "Evergreen Opportunities", badge: null, info: "Established Reddit threads ranking high on Google for your keywords. Might be older but still getting traffic." },
-  { label: "Create Posts", badge: null, info: null },
-  { label: "Reddit Mentions", badge: null, info: null },
+  { label: "Create Posts", badge: null, info: "Generate brand-new Reddit discussion threads in relevant subreddits to build visibility from scratch." },
+  { label: "Brand Mentions", badge: null, info: "Monitor Reddit for every mention of your brand — join conversations, respond to feedback, and track sentiment." },
 ];
 
 const NAV_ROUTES: Record<string, string> = {
@@ -22,26 +21,38 @@ const NAV_ROUTES: Record<string, string> = {
   "Live Opportunities": "/studio",
   "Evergreen Opportunities": "/studio/evergreen",
   "Create Posts": "/studio/create-posts",
-  "Reddit Mentions": "/studio/reddit-mentions",
+  "Brand Mentions": "/studio/reddit-mentions",
   "Brand Setup": "/studio/brand-setup",
   "Billing": "/studio/billing",
   "Help Center": "/studio/help-center",
   "Settings": "/studio/settings",
 };
 
-// Bottom utility links
 const BOTTOM_ITEMS = [
   { label: "Brand Setup" },
   { label: "Billing" },
   { label: "Help Center" },
 ];
 
-// Shared user state — in a real app this would come from context/API
-// We expose setters so Settings page can update them
-export let sidebarUsername = "Sasi Kumar";
-export let sidebarAvatar = ""; // data URL or empty for animated default
-export const setSidebarUsername = (v: string) => { sidebarUsername = v; };
-export const setSidebarAvatar = (v: string) => { sidebarAvatar = v; };
+// Persist user state via localStorage so Settings updates survive navigation
+export const getSidebarUsername = () => {
+  if (typeof window === "undefined") return "Sasi Kumar";
+  return localStorage.getItem("sidebar_username") || "Sasi Kumar";
+};
+export const getSidebarAvatar = () => {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("sidebar_avatar") || "";
+};
+export const setSidebarUsername = (v: string) => {
+  if (typeof window !== "undefined") localStorage.setItem("sidebar_username", v);
+};
+export const setSidebarAvatar = (v: string) => {
+  if (typeof window !== "undefined") localStorage.setItem("sidebar_avatar", v);
+};
+
+// Keep module-level exports for backwards compat (not used for reading anymore)
+export const sidebarUsername = "Sasi Kumar";
+export const sidebarAvatar = "";
 
 interface SidebarProps { activeNav: string }
 
@@ -50,20 +61,28 @@ export default function Sidebar({ activeNav }: SidebarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [tooltip, setTooltip] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
-  const [username, setUsername] = useState(sidebarUsername);
-  const [avatar, setAvatar] = useState(sidebarAvatar);
+  const [username, setUsername] = useState("Sasi Kumar");
+  const [avatar, setAvatar] = useState("");
   const [hue, setHue] = useState(0);
 
-  // Animate logo hue
+  useEffect(() => {
+    setUsername(getSidebarUsername());
+    setAvatar(getSidebarAvatar());
+  }, []);
+
   useEffect(() => {
     const t = setInterval(() => setHue(h => (h + 1) % 360), 30);
     return () => clearInterval(t);
   }, []);
 
-  // Sync username/avatar from module-level state on mount
+  // Re-sync when tab becomes visible (user returning from settings)
   useEffect(() => {
-    setUsername(sidebarUsername);
-    setAvatar(sidebarAvatar);
+    const onFocus = () => {
+      setUsername(getSidebarUsername());
+      setAvatar(getSidebarAvatar());
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
   }, []);
 
   return (
@@ -73,7 +92,6 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
           <div style={{ width: 28, height: 28, background: `hsl(${hue}, 85%, 55%)`, borderRadius: 6, flexShrink: 0, transition: "background 0.1s" }} />
           <span style={{ fontWeight: 700, fontSize: 15, color: "#fff", flex: 1 }}>Reddit Studio</span>
-          {/* What is this? button */}
           <button
             onClick={() => setShowGuide(g => !g)}
             title="What is this?"
@@ -81,7 +99,6 @@ export default function Sidebar({ activeNav }: SidebarProps) {
           >?</button>
         </div>
 
-        {/* Guide panel */}
         {showGuide && (
           <div style={{ background: "#0d1520", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 12, fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>
             <div style={{ fontWeight: 700, color: "#fff", marginBottom: 6, fontSize: 13 }}>What is Reddit Studio?</div>
@@ -142,7 +159,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
               <Link
                 href={NAV_ROUTES[item.label]}
                 style={{
-                  display: "flex", alignItems: "center", gap: 10,
+                  display: "flex", alignItems: "center", gap: 6,
                   padding: "9px 16px", cursor: "pointer", fontSize: 13, fontWeight: 500,
                   color: isActive ? "#fff" : "#94a3b8",
                   background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
@@ -150,21 +167,22 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   textDecoration: "none", transition: "all 0.15s",
                 }}
               >
-                <span style={{ flex: 1 }}>{item.label}</span>
+                <span style={{ flex: "none" }}>{item.label}</span>
+                {item.info && (
+                  <span
+                    onMouseEnter={(e) => { e.preventDefault(); e.stopPropagation(); setTooltip(item.label); }}
+                    onMouseLeave={() => setTooltip(null)}
+                    onClick={(e) => e.preventDefault()}
+                    style={{ width: 15, height: 15, borderRadius: "50%", border: `1px solid #334155`, color: "#475569", fontSize: 9, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "default", flexShrink: 0 }}
+                  >i</span>
+                )}
+                <span style={{ flex: 1 }} />
                 {item.badge && (
                   <span style={{ background: ORANGE, color: "#fff", borderRadius: 99, fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>
                     {item.badge}
                   </span>
                 )}
-                {item.info && (
-                  <span
-                    onMouseEnter={() => setTooltip(item.label)}
-                    onMouseLeave={() => setTooltip(null)}
-                    style={{ width: 16, height: 16, borderRadius: "50%", border: `1px solid #334155`, color: "#475569", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", cursor: "default", flexShrink: 0 }}
-                  >i</span>
-                )}
               </Link>
-              {/* Tooltip */}
               {tooltip === item.label && item.info && (
                 <div style={{
                   position: "fixed", left: 258, zIndex: 300,
@@ -208,7 +226,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {avatar ? (
           <img src={avatar} alt="" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
         ) : (
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: `hsl(${hue}, 70%, 50%)`, flexShrink: 0, transition: "background 0.1s" }} />
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: `hsl(${(hue + 120) % 360}, 70%, 50%)`, flexShrink: 0, transition: "background 0.1s" }} />
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
@@ -217,7 +235,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         <Link
           href="/studio/settings"
           title="Settings"
-          style={{ color: activeNav === "Settings" ? ORANGE : "#64748b", textDecoration: "none", fontSize: 22, display: "flex", alignItems: "center", flexShrink: 0 }}
+          style={{ color: activeNav === "Settings" ? ORANGE : "#64748b", textDecoration: "none", fontSize: 28, lineHeight: 1, display: "flex", alignItems: "center", flexShrink: 0 }}
         >
           ⚙
         </Link>

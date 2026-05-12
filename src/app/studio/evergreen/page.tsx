@@ -255,11 +255,11 @@ function SubredditPill({ name }: { name: string }) {
   return <span style={{ background: "#1e3a5f", color: "#60a5fa", padding: "2px 10px", borderRadius: 99, fontSize: 12, fontWeight: 600 }}>{name}</span>;
 }
 
-type Filter = "All" | "High Traffic" | "Low Competition";
+type SortMode = "relevance" | "traffic" | "date";
 
 export default function EvergreenPage() {
   const [selected, setSelected] = useState(opportunities[0]);
-  const [filter, setFilter] = useState<Filter>("All");
+  const [sortMode, setSortMode] = useState<SortMode>("relevance");
   const [showModal, setShowModal] = useState(false);
   const [tier, setTier] = useState("tier2");
   const [scheduleDate, setScheduleDate] = useState("");
@@ -288,11 +288,11 @@ export default function EvergreenPage() {
     setTimeout(() => { setGeneratedComment(MOCK_COMMENT); setGenerating(false); setHasGenerated(true); }, 1500);
   };
 
-  const filtered = filter === "High Traffic"
-    ? opportunities.filter(o => o.upvotes > 2000)
-    : filter === "Low Competition"
-    ? opportunities.filter(o => o.score < 80)
-    : opportunities;
+  const filtered = [...opportunities].sort((a, b) =>
+    sortMode === "traffic" ? b.upvotes - a.upvotes :
+    sortMode === "date" ? b.id - a.id :
+    b.score - a.score
+  );
 
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#0a0f1a", color: "#e2e8f0", overflow: "hidden" }}>
@@ -301,31 +301,20 @@ export default function EvergreenPage() {
       {/* Center — flex 1 = 50% */}
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}` }}>
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, background: "#0d1520" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
               <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Evergreen Opportunities</h2>
               <p style={{ margin: "2px 0 0", fontSize: 12, color: "#64748b" }}>143 Posts Found — established threads with sustained traffic</p>
             </div>
-            <select style={{ background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "6px 10px", borderRadius: 6, fontSize: 12 }}>
-              <option>Sort: Relevance</option>
-              <option>Sort: Traffic</option>
-              <option>Sort: Date</option>
+            <select
+              value={sortMode}
+              onChange={e => setSortMode(e.target.value as SortMode)}
+              style={{ background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "6px 10px", borderRadius: 6, fontSize: 12, outline: "none" }}
+            >
+              <option value="relevance">Sort: Relevance score</option>
+              <option value="traffic">Sort: Highest traffic (upvotes)</option>
+              <option value="date">Sort: Most recent</option>
             </select>
-          </div>
-          {/* Filter chips */}
-          <div style={{ display: "flex", gap: 8 }}>
-            {(["All", "High Traffic", "Low Competition"] as Filter[]).map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                style={{
-                  padding: "5px 14px", borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: "pointer",
-                  border: `1px solid ${filter === f ? ORANGE : BORDER}`,
-                  background: filter === f ? "rgba(232,93,47,0.15)" : "transparent",
-                  color: filter === f ? ORANGE : "#64748b",
-                }}
-              >{f}</button>
-            ))}
           </div>
         </div>
 

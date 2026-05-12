@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import Sidebar, { ORANGE, BORDER, setSidebarUsername, setSidebarAvatar } from "@/components/studio/Sidebar";
+import Sidebar, { ORANGE, BORDER, setSidebarUsername, setSidebarAvatar, getSidebarUsername, getSidebarAvatar } from "@/components/studio/Sidebar";
 
 const BG = "#0a0f1a";
 const SURFACE = "#1e2a3b";
@@ -68,6 +68,11 @@ function AccountTab() {
   const [animLogo, setAnimLogo] = useState(true);
   const [hue, setHue] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setName(getSidebarUsername());
+    setAvatarState(getSidebarAvatar());
+  }, []);
 
   useEffect(() => {
     if (!animLogo) return;

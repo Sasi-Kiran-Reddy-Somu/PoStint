@@ -150,7 +150,7 @@ export default function RedditMentionsPage() {
 
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Inter', system-ui, sans-serif", background: "#0a0f1a", color: TEXT, overflow: "hidden" }}>
-      <Sidebar activeNav="Reddit Mentions" />
+      <Sidebar activeNav="Brand Mentions" />
 
       {/* Center pane */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, minWidth: 0 }}>
@@ -158,7 +158,7 @@ export default function RedditMentionsPage() {
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, background: "#0d1520" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Reddit Mentions</h2>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Brand Mentions</h2>
               <p style={{ margin: "2px 0 0", fontSize: 12, color: MUTED }}>Last updated: Today 6:00 AM</p>
             </div>
             <select style={{ background: "#162032", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "6px 10px", borderRadius: 6, fontSize: 12 }}>
