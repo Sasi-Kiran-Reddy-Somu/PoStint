@@ -155,7 +155,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
           >
             <div>
               <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
+              <div style={{ fontSize: 17, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
             </div>
             <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
           </div>
@@ -167,7 +167,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   key={p}
                   onClick={() => { setProject(p); setDropdownOpen(false); }}
                   style={{
-                    padding: "10px 12px", fontSize: 14, cursor: "pointer",
+                    padding: "10px 12px", fontSize: 17, cursor: "pointer",
                     color: p === project ? "#fff" : "#94a3b8",
                     background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
                     borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
@@ -176,7 +176,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   }}
                 >{p}</div>
               ))}
-              <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 12px", fontSize: 13, color: ORANGE, cursor: "pointer", fontWeight: 600 }}>
+              <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 12px", fontSize: 15, color: ORANGE, cursor: "pointer", fontWeight: 600 }}>
                 + New Project
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                 href={NAV_ROUTES[item.label]}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
-                  padding: "10px 16px", cursor: "pointer", fontSize: 14, fontWeight: 500,
+                  padding: "10px 16px", cursor: "pointer", fontSize: 17, fontWeight: 500,
                   color: isActive ? "#fff" : "#94a3b8",
                   background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                   borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
@@ -249,7 +249,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
               href={NAV_ROUTES[item.label]}
               style={{
                 display: "flex", alignItems: "center",
-                padding: "10px 16px", fontSize: 14, fontWeight: 500,
+                padding: "10px 16px", fontSize: 17, fontWeight: 500,
                 color: isActive ? "#fff" : "#94a3b8",
                 background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                 borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
@@ -268,8 +268,8 @@ export default function Sidebar({ activeNav }: SidebarProps) {
           <div style={{ width: 32, height: 32, borderRadius: "50%", background: avatarColor, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
-          <div style={{ fontSize: 12, color: "#64748b" }}>Pro Plan</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
+          <div style={{ fontSize: 13, color: "#64748b" }}>Pro Plan</div>
         </div>
         <Link
           href="/studio/settings"
