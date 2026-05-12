@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 export const ORANGE = "#e85d2f";
 export const SIDEBAR_BG = "#1e2a3b";
@@ -109,9 +109,6 @@ export default function Sidebar({ activeNav }: SidebarProps) {
   const [onboardStep, setOnboardStep] = useState(0);
   const [username, setUsername] = useState("Sasi Kumar");
   const [avatar, setAvatar] = useState("");
-  const [phase, setPhase] = useState(0);
-  const animRef = useRef<number | null>(null);
-
   useEffect(() => {
     setUsername(getSidebarUsername());
     setAvatar(getSidebarAvatar());
@@ -126,31 +123,6 @@ export default function Sidebar({ activeNav }: SidebarProps) {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
-  // Logo-only smooth color animation (not the avatar)
-  useEffect(() => {
-    let start: number | null = null;
-    const tick = (ts: number) => {
-      if (!start) start = ts;
-      setPhase(((ts - start) % 4000) / 4000);
-      animRef.current = requestAnimationFrame(tick);
-    };
-    animRef.current = requestAnimationFrame(tick);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, []);
-
-  const STOPS = [
-    [232, 93, 47],
-    [99, 102, 241],
-    [16, 185, 129],
-    [232, 93, 47],
-  ];
-  const logoColor = (() => {
-    const idx = Math.floor(phase * 3);
-    const t = (phase * 3) - idx;
-    const [r1, g1, b1] = STOPS[idx];
-    const [r2, g2, b2] = STOPS[idx + 1];
-    return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
-  })();
 
   // Static deterministic color for avatar
   const avatarBg = avatarColorForName(username);
@@ -223,7 +195,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {/* Logo */}
         <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 28, height: 28, background: logoColor, borderRadius: 6, flexShrink: 0 }} />
+            <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6, flexShrink: 0 }} />
             <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
             <button
               onClick={() => { setOnboardStep(0); setOnboarding(true); }}
