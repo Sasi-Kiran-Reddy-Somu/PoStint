@@ -10,8 +10,8 @@ const MUTED = "#64748b";
 const MUTED2 = "#94a3b8";
 const INPUT_BG = "#162032";
 
-type Tab = "Account" | "Notifications" | "Security" | "Team" | "Appearance";
-const TABS: Tab[] = ["Account", "Notifications", "Security", "Team", "Appearance"];
+type Tab = "Account" | "Notifications" | "Security" | "Team";
+const TABS: Tab[] = ["Account", "Notifications", "Security", "Team"];
 
 function Label({ children }: { children: React.ReactNode }) {
   return <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: MUTED2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>{children}</label>;
@@ -62,6 +62,8 @@ function AccountTab() {
   const [company, setCompany] = useState("Blackbrookcase");
   const [industry, setIndustry] = useState("Consumer Electronics");
   const [website, setWebsite] = useState("https://blackbrookcase.com");
+  const [theme, setTheme] = useState("dark");
+  const [compact, setCompact] = useState(false);
 
   const INDUSTRIES = ["Consumer Electronics", "Fashion & Apparel", "Health & Beauty", "Food & Beverage", "Software & SaaS", "Finance", "Education", "Other"];
 
@@ -84,7 +86,41 @@ function AccountTab() {
           <Input value="Reddit" readOnly />
         </div>
       </div>
-      <OrangeBtn>Save Changes</OrangeBtn>
+      <div style={{ marginBottom: 16 }}>
+        <OrangeBtn>Save Changes</OrangeBtn>
+      </div>
+
+      {/* Appearance */}
+      <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 24, marginTop: 8 }}>
+        <h3 style={{ margin: "0 0 20px", fontSize: 15, fontWeight: 700, color: "#fff" }}>Appearance</h3>
+        <div style={{ marginBottom: 20 }}>
+          <Label>Theme</Label>
+          <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+            {[{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }, { id: "system", label: "System" }].map(t => (
+              <div
+                key={t.id}
+                onClick={() => setTheme(t.id)}
+                style={{
+                  flex: 1, border: `2px solid ${theme === t.id ? ORANGE : BORDER}`,
+                  background: theme === t.id ? "rgba(232,93,47,0.08)" : SURFACE2,
+                  borderRadius: 10, padding: "16px 12px", cursor: "pointer",
+                  textAlign: "center", transition: "all 0.15s",
+                }}
+              >
+                <div style={{ width: 28, height: 28, borderRadius: 6, margin: "0 auto 8px", background: t.id === "light" ? "#e2e8f0" : t.id === "dark" ? "#0a0f1a" : "linear-gradient(135deg, #e2e8f0 50%, #0a0f1a 50%)", border: `1px solid ${BORDER}` }} />
+                <div style={{ fontSize: 12, fontWeight: 600, color: theme === t.id ? ORANGE : MUTED2 }}>{t.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 18px" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>Compact Mode</div>
+            <div style={{ fontSize: 12, color: MUTED }}>Reduce spacing and padding across the interface</div>
+          </div>
+          <Toggle on={compact} onToggle={() => setCompact(!compact)} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -252,54 +288,6 @@ function TeamTab() {
   );
 }
 
-const THEMES = [
-  { id: "light",  label: "Light" },
-  { id: "dark",   label: "Dark" },
-  { id: "system", label: "System" },
-];
-
-function AppearanceTab() {
-  const [theme, setTheme] = useState("light");
-  const [compact, setCompact] = useState(false);
-
-  return (
-    <div>
-      <h2 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 700, color: "#fff" }}>Appearance</h2>
-
-      <div style={{ marginBottom: 24 }}>
-        <Label>Theme</Label>
-        <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-          {THEMES.map(t => (
-            <div
-              key={t.id}
-              onClick={() => setTheme(t.id)}
-              style={{
-                flex: 1, border: `2px solid ${theme === t.id ? ORANGE : BORDER}`,
-                background: theme === t.id ? "rgba(232,93,47,0.08)" : SURFACE2,
-                borderRadius: 10, padding: "20px 16px", cursor: "pointer",
-                textAlign: "center", transition: "all 0.15s",
-              }}
-            >
-              <div style={{ width: 32, height: 32, borderRadius: 6, margin: "0 auto 10px", background: t.id === "light" ? "#e2e8f0" : t.id === "dark" ? "#0a0f1a" : "linear-gradient(135deg, #e2e8f0 50%, #0a0f1a 50%)", border: `1px solid ${BORDER}` }} />
-              <div style={{ fontSize: 13, fontWeight: 600, color: theme === t.id ? ORANGE : MUTED2 }}>{t.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px", marginBottom: 16 }}>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 3 }}>Compact Mode</div>
-          <div style={{ fontSize: 12, color: MUTED }}>Reduce spacing and padding across the interface</div>
-        </div>
-        <Toggle on={compact} onToggle={() => setCompact(!compact)} />
-      </div>
-
-      <div style={{ fontSize: 12, color: MUTED, fontStyle: "italic" }}>Changes saved automatically</div>
-    </div>
-  );
-}
-
 /* ── Main Page ── */
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("Account");
@@ -309,7 +297,6 @@ export default function SettingsPage() {
     Notifications: <NotificationsTab />,
     Security:      <SecurityTab />,
     Team:          <TeamTab />,
-    Appearance:    <AppearanceTab />,
   };
 
   return (
