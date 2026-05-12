@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import Sidebar, { ORANGE, BORDER } from "@/components/studio/Sidebar";
+import { useState, useEffect, useRef } from "react";
+import Sidebar, { ORANGE, BORDER, setSidebarUsername, setSidebarAvatar } from "@/components/studio/Sidebar";
 
 const BG = "#0a0f1a";
 const SURFACE = "#1e2a3b";
@@ -64,12 +64,68 @@ function AccountTab() {
   const [website, setWebsite] = useState("https://blackbrookcase.com");
   const [theme, setTheme] = useState("dark");
   const [compact, setCompact] = useState(false);
+  const [avatar, setAvatarState] = useState("");
+  const [animLogo, setAnimLogo] = useState(true);
+  const [hue, setHue] = useState(0);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!animLogo) return;
+    const t = setInterval(() => setHue(h => (h + 1) % 360), 30);
+    return () => clearInterval(t);
+  }, [animLogo]);
 
   const INDUSTRIES = ["Consumer Electronics", "Fashion & Apparel", "Health & Beauty", "Food & Beverage", "Software & SaaS", "Finance", "Education", "Other"];
+
+  const handleSave = () => {
+    setSidebarUsername(name);
+    setSidebarAvatar(avatar);
+  };
+
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const url = ev.target?.result as string;
+      setAvatarState(url);
+      setSidebarAvatar(url);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div>
       <h2 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 700, color: "#fff" }}>Account Settings</h2>
+
+      {/* Profile photo */}
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          {avatar ? (
+            <img src={avatar} alt="" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: `2px solid ${BORDER}` }} />
+          ) : (
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: animLogo ? `hsl(${hue}, 70%, 50%)` : "#334155", border: `2px solid ${BORDER}`, transition: "background 0.1s" }} />
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={() => fileRef.current?.click()}
+              style={{ background: ORANGE, color: "#fff", border: "none", padding: "7px 16px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+            >Upload Photo</button>
+            {avatar && <button
+              onClick={() => { setAvatarState(""); setSidebarAvatar(""); }}
+              style={{ background: "transparent", border: `1px solid ${BORDER}`, color: MUTED2, padding: "7px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer" }}
+            >Remove</button>}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Toggle on={animLogo} onToggle={() => setAnimLogo(v => !v)} />
+            <span style={{ fontSize: 12, color: MUTED }}>Animated colour avatar (when no photo)</span>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} style={{ display: "none" }} />
+        </div>
+      </div>
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         <div><Label>Display Name</Label><Input value={name} onChange={setName} /></div>
         <div><Label>Work Email</Label><Input value={email} onChange={setEmail} type="email" /></div>
@@ -87,7 +143,7 @@ function AccountTab() {
         </div>
       </div>
       <div style={{ marginBottom: 16 }}>
-        <OrangeBtn>Save Changes</OrangeBtn>
+        <OrangeBtn onClick={handleSave}>Save Changes</OrangeBtn>
       </div>
 
       {/* Appearance */}

@@ -14,9 +14,8 @@ type RaiseTab = "raise" | "track";
 const COMPLAINT_TYPES = [
   "Bug / Technical Issue",
   "Task Not Credited",
-  "Worker Performance Issue",
+  "Wrong Comment / Post Submitted by Worker",
   "Incorrect Billing Charge",
-  "Comment Removed Unfairly",
   "Feature Request",
   "Account Access Issue",
   "Other",
