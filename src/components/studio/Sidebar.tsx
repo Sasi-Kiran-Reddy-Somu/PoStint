@@ -339,7 +339,6 @@ export default function Sidebar({ activeNav }: SidebarProps) {
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
-            <div style={{ fontSize: 13, color: "#64748b" }}>Pro Plan</div>
           </div>
           <Link
             href="/studio/settings"
