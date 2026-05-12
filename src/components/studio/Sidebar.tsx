@@ -34,6 +34,51 @@ const BOTTOM_ITEMS = [
   { label: "Help Center" },
 ];
 
+// Onboarding steps — each highlights a feature
+const ONBOARDING_STEPS = [
+  {
+    title: "Welcome to Reddit Studio",
+    description: "Reddit Studio helps your brand get authentic visibility on Reddit — without ads. It finds relevant threads, generates natural comments, and dispatches real Reddit users to post them on your behalf. Let's take a quick tour.",
+    icon: "🚀",
+  },
+  {
+    title: "Live Opportunities",
+    description: "These are Reddit threads that AI engines are actively citing right now for your tracked prompts, plus new posts matching your keywords. They're time-sensitive — the sooner you engage, the better the impact.",
+    icon: "⚡",
+  },
+  {
+    title: "Evergreen Opportunities",
+    description: "Established Reddit threads that rank high on Google for your keywords. They may be older but they keep getting traffic — a comment here has long-term value.",
+    icon: "🌲",
+  },
+  {
+    title: "Create Posts",
+    description: "Generate brand-new Reddit discussion threads in relevant subreddits. Use this to spark conversations around topics where your brand naturally fits.",
+    icon: "✏️",
+  },
+  {
+    title: "Brand Mentions",
+    description: "Monitor Reddit for every mention of your brand. Join conversations, respond to feedback, and track sentiment — all from one place.",
+    icon: "📡",
+  },
+  {
+    title: "My Tasks",
+    description: "All the tasks you've submitted live here. Track their status, see how many credits were spent, check if comments are live, and request refunds if something goes wrong.",
+    icon: "✅",
+  },
+];
+
+// Deterministic avatar color from username — same approach as Google/Notion/Linear
+const AVATAR_COLORS = [
+  "#e85d2f", "#6366f1", "#10b981", "#f59e0b",
+  "#3b82f6", "#ec4899", "#8b5cf6", "#14b8a6",
+];
+function avatarColorForName(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 // Persist user state via localStorage so Settings updates survive navigation
 export const getSidebarUsername = () => {
   if (typeof window === "undefined") return "Sasi Kumar";
@@ -50,7 +95,6 @@ export const setSidebarAvatar = (v: string) => {
   if (typeof window !== "undefined") localStorage.setItem("sidebar_avatar", v);
 };
 
-// Keep module-level exports for backwards compat (not used for reading anymore)
 export const sidebarUsername = "Sasi Kumar";
 export const sidebarAvatar = "";
 
@@ -60,28 +104,17 @@ export default function Sidebar({ activeNav }: SidebarProps) {
   const [project, setProject] = useState("Blackbrookcase");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [tooltip, setTooltip] = useState<string | null>(null);
-  const [showGuide, setShowGuide] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const [onboarding, setOnboarding] = useState(false);
+  const [onboardStep, setOnboardStep] = useState(0);
   const [username, setUsername] = useState("Sasi Kumar");
   const [avatar, setAvatar] = useState("");
   const [phase, setPhase] = useState(0);
-  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
   const animRef = useRef<number | null>(null);
 
   useEffect(() => {
     setUsername(getSidebarUsername());
     setAvatar(getSidebarAvatar());
-  }, []);
-
-  // Smooth logo animation: oscillate between brand colors like a Google-style icon
-  useEffect(() => {
-    let start: number | null = null;
-    const tick = (ts: number) => {
-      if (!start) start = ts;
-      setPhase(((ts - start) % 4000) / 4000); // 4s full cycle
-      animRef.current = requestAnimationFrame(tick);
-    };
-    animRef.current = requestAnimationFrame(tick);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, []);
 
   useEffect(() => {
@@ -93,192 +126,247 @@ export default function Sidebar({ activeNav }: SidebarProps) {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
-  // Interpolate between brand stop colors for a smooth Gmail-style gradient shift
+  // Logo-only smooth color animation (not the avatar)
+  useEffect(() => {
+    let start: number | null = null;
+    const tick = (ts: number) => {
+      if (!start) start = ts;
+      setPhase(((ts - start) % 4000) / 4000);
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+  }, []);
+
   const STOPS = [
-    [232, 93, 47],   // orange
-    [99, 102, 241],  // indigo
-    [16, 185, 129],  // emerald
-    [232, 93, 47],   // back to orange
+    [232, 93, 47],
+    [99, 102, 241],
+    [16, 185, 129],
+    [232, 93, 47],
   ];
   const logoColor = (() => {
     const idx = Math.floor(phase * 3);
     const t = (phase * 3) - idx;
     const [r1, g1, b1] = STOPS[idx];
     const [r2, g2, b2] = STOPS[idx + 1];
-    const r = Math.round(r1 + (r2 - r1) * t);
-    const g = Math.round(g1 + (g2 - g1) * t);
-    const b = Math.round(b1 + (b2 - b1) * t);
-    return `rgb(${r},${g},${b})`;
-  })();
-  const avatarColor = (() => {
-    const shifted = (phase + 0.33) % 1;
-    const idx = Math.floor(shifted * 3);
-    const t = (shifted * 3) - idx;
-    const [r1, g1, b1] = STOPS[idx];
-    const [r2, g2, b2] = STOPS[idx + 1];
     return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
   })();
 
+  // Static deterministic color for avatar
+  const avatarBg = avatarColorForName(username);
+  const initials = username.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+
+  const step = ONBOARDING_STEPS[onboardStep];
+
   return (
-    <div style={{ width: 250, background: SIDEBAR_BG, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, flexShrink: 0, height: "100vh", position: "sticky", top: 0 }}>
-      {/* Logo */}
-      <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-          <div style={{ width: 28, height: 28, background: logoColor, borderRadius: 6, flexShrink: 0 }} />
-          <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
-          <button
-            onClick={() => setShowGuide(g => !g)}
-            title="What is this?"
-            style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", borderRadius: 6, width: 26, height: 26, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-          >?</button>
-        </div>
-
-        {showGuide && (
-          <div style={{ background: "#0d1520", border: `1px solid ${BORDER}`, borderRadius: 8, padding: "12px 14px", marginBottom: 12, fontSize: 12, color: "#94a3b8", lineHeight: 1.6 }}>
-            <div style={{ fontWeight: 700, color: "#fff", marginBottom: 6, fontSize: 13 }}>What is Reddit Studio?</div>
-            Reddit Studio helps brands get authentic visibility on Reddit — without ads. It finds relevant threads, generates natural comments, and dispatches real Reddit users (workers) to post them on your behalf.
-            <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 4 }}>
-              <div><span style={{ color: ORANGE }}>Live Opportunities</span> — fresh threads to engage now</div>
-              <div><span style={{ color: ORANGE }}>Evergreen</span> — long-lived threads for sustained presence</div>
-              <div><span style={{ color: ORANGE }}>Create Posts</span> — generate new discussion threads</div>
-              <div><span style={{ color: ORANGE }}>My Tasks</span> — track all submitted tasks</div>
-            </div>
-            <button onClick={() => setShowGuide(false)} style={{ marginTop: 10, background: "transparent", border: "none", color: "#475569", fontSize: 11, cursor: "pointer", padding: 0 }}>Close ×</button>
-          </div>
-        )}
-
-        {/* Project dropdown */}
-        <div style={{ position: "relative" }}>
+    <>
+      {/* Onboarding overlay */}
+      {onboarding && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setOnboarding(false)}
+        >
           <div
-            onClick={() => setDropdownOpen(o => !o)}
-            style={{ background: "#162032", border: `1px solid ${dropdownOpen ? ORANGE : BORDER}`, borderRadius: 8, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 16,
+              padding: "36px 40px", width: 440, boxShadow: "0 32px 64px rgba(0,0,0,0.6)",
+              position: "relative",
+            }}
           >
-            <div>
-              <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
-              <div style={{ fontSize: 17, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
+            {/* Step counter */}
+            <div style={{ display: "flex", gap: 6, marginBottom: 24, justifyContent: "center" }}>
+              {ONBOARDING_STEPS.map((_, i) => (
+                <div key={i} style={{ width: i === onboardStep ? 20 : 7, height: 7, borderRadius: 99, background: i === onboardStep ? ORANGE : "#334155", transition: "all 0.2s" }} />
+              ))}
             </div>
-            <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
+
+            {/* Icon */}
+            <div style={{ fontSize: 40, textAlign: "center", marginBottom: 16 }}>{step.icon}</div>
+
+            {/* Title */}
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", textAlign: "center", marginBottom: 12 }}>{step.title}</div>
+
+            {/* Description */}
+            <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.7, textAlign: "center", marginBottom: 32 }}>{step.description}</div>
+
+            {/* Navigation buttons */}
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              {onboardStep > 0 ? (
+                <button
+                  onClick={() => setOnboardStep(s => s - 1)}
+                  style={{ flex: 1, background: "transparent", border: `1px solid ${BORDER}`, color: "#94a3b8", padding: "11px", borderRadius: 9, fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+                >← Back</button>
+              ) : (
+                <button
+                  onClick={() => setOnboarding(false)}
+                  style={{ flex: 1, background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", padding: "11px", borderRadius: 9, fontSize: 14, cursor: "pointer" }}
+                >Skip</button>
+              )}
+              {onboardStep < ONBOARDING_STEPS.length - 1 ? (
+                <button
+                  onClick={() => setOnboardStep(s => s + 1)}
+                  style={{ flex: 2, background: ORANGE, color: "#fff", border: "none", padding: "11px", borderRadius: 9, fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+                >Next →</button>
+              ) : (
+                <button
+                  onClick={() => setOnboarding(false)}
+                  style={{ flex: 2, background: ORANGE, color: "#fff", border: "none", padding: "11px", borderRadius: 9, fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+                >Get Started ✓</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{ width: 250, background: SIDEBAR_BG, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, flexShrink: 0, height: "100vh", position: "sticky", top: 0 }}>
+        {/* Logo */}
+        <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 28, height: 28, background: logoColor, borderRadius: 6, flexShrink: 0 }} />
+            <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
+            <button
+              onClick={() => { setOnboardStep(0); setOnboarding(true); }}
+              title="Product tour"
+              style={{ background: "transparent", border: `1px solid ${BORDER}`, color: "#64748b", borderRadius: 6, width: 26, height: 26, fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+            >?</button>
           </div>
 
-          {dropdownOpen && (
-            <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden", zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-              {PROJECTS.map(p => (
-                <div
-                  key={p}
-                  onClick={() => { setProject(p); setDropdownOpen(false); }}
-                  style={{
-                    padding: "10px 12px", fontSize: 17, cursor: "pointer",
-                    color: p === project ? "#fff" : "#94a3b8",
-                    background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
-                    borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
-                    fontWeight: p === project ? 600 : 400,
-                    transition: "background 0.1s",
-                  }}
-                >{p}</div>
-              ))}
-              <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 12px", fontSize: 15, color: ORANGE, cursor: "pointer", fontWeight: 600 }}>
-                + New Project
+          {/* Project dropdown */}
+          <div style={{ position: "relative" }}>
+            <div
+              onClick={() => setDropdownOpen(o => !o)}
+              style={{ background: "#162032", border: `1px solid ${dropdownOpen ? ORANGE : BORDER}`, borderRadius: 8, padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
+            >
+              <div>
+                <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
+                <div style={{ fontSize: 17, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
               </div>
+              <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Main Nav */}
-      <nav style={{ flex: 1, padding: "8px 0", overflowY: "auto" }}>
-        {NAV_ITEMS.map((item) => {
-          const isActive = activeNav === item.label;
-          return (
-            <div key={item.label} style={{ position: "relative" }}>
+            {dropdownOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, background: "#162032", border: `1px solid ${BORDER}`, borderRadius: 8, overflow: "hidden", zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+                {PROJECTS.map(p => (
+                  <div
+                    key={p}
+                    onClick={() => { setProject(p); setDropdownOpen(false); }}
+                    style={{
+                      padding: "10px 12px", fontSize: 17, cursor: "pointer",
+                      color: p === project ? "#fff" : "#94a3b8",
+                      background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
+                      borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
+                      fontWeight: p === project ? 600 : 400,
+                      transition: "background 0.1s",
+                    }}
+                  >{p}</div>
+                ))}
+                <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 12px", fontSize: 15, color: ORANGE, cursor: "pointer", fontWeight: 600 }}>
+                  + New Project
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Nav */}
+        <nav style={{ flex: 1, padding: "8px 0", overflowY: "auto" }}>
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeNav === item.label;
+            return (
+              <div key={item.label} style={{ position: "relative" }}>
+                <Link
+                  href={NAV_ROUTES[item.label]}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "10px 16px", cursor: "pointer", fontSize: 17, fontWeight: 500,
+                    color: isActive ? "#fff" : "#94a3b8",
+                    background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
+                    borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
+                    textDecoration: "none", transition: "all 0.15s",
+                  }}
+                >
+                  <span style={{ flex: "none" }}>{item.label}</span>
+                  {item.info && (
+                    <span
+                      onMouseEnter={(e) => { e.preventDefault(); e.stopPropagation(); setTooltip(item.label); setTooltipPos({ x: e.clientX, y: e.clientY }); }}
+                      onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
+                      onMouseLeave={() => { setTooltip(null); setTooltipPos(null); }}
+                      onClick={(e) => e.preventDefault()}
+                      style={{ width: 15, height: 15, borderRadius: "50%", border: `1px solid #334155`, color: "#475569", fontSize: 9, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "default", flexShrink: 0 }}
+                    >i</span>
+                  )}
+                  <span style={{ flex: 1 }} />
+                  {item.badge && (
+                    <span style={{ background: ORANGE, color: "#fff", borderRadius: 99, fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+                {tooltip === item.label && item.info && tooltipPos && (
+                  <div style={{
+                    position: "fixed",
+                    left: tooltipPos.x + 14,
+                    top: tooltipPos.y - 8,
+                    zIndex: 300,
+                    background: "#0d1520", border: `1px solid ${BORDER}`,
+                    borderRadius: 8, padding: "10px 14px", width: 220,
+                    fontSize: 12, color: "#94a3b8", lineHeight: 1.6,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                    pointerEvents: "none",
+                  }}>
+                    <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4, fontSize: 12 }}>{item.label}</div>
+                    {item.info}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Bottom utility links */}
+        <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 0" }}>
+          {BOTTOM_ITEMS.map(item => {
+            const isActive = activeNav === item.label;
+            return (
               <Link
+                key={item.label}
                 href={NAV_ROUTES[item.label]}
                 style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  padding: "10px 16px", cursor: "pointer", fontSize: 17, fontWeight: 500,
+                  display: "flex", alignItems: "center",
+                  padding: "10px 16px", fontSize: 17, fontWeight: 500,
                   color: isActive ? "#fff" : "#94a3b8",
                   background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                   borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
                   textDecoration: "none", transition: "all 0.15s",
                 }}
-              >
-                <span style={{ flex: "none" }}>{item.label}</span>
-                {item.info && (
-                  <span
-                    onMouseEnter={(e) => { e.preventDefault(); e.stopPropagation(); setTooltip(item.label); setTooltipPos({ x: e.clientX, y: e.clientY }); }}
-                    onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
-                    onMouseLeave={() => { setTooltip(null); setTooltipPos(null); }}
-                    onClick={(e) => e.preventDefault()}
-                    style={{ width: 15, height: 15, borderRadius: "50%", border: `1px solid #334155`, color: "#475569", fontSize: 9, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "default", flexShrink: 0 }}
-                  >i</span>
-                )}
-                <span style={{ flex: 1 }} />
-                {item.badge && (
-                  <span style={{ background: ORANGE, color: "#fff", borderRadius: 99, fontSize: 10, fontWeight: 700, padding: "1px 6px" }}>
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-              {tooltip === item.label && item.info && tooltipPos && (
-                <div style={{
-                  position: "fixed",
-                  left: tooltipPos.x + 14,
-                  top: tooltipPos.y - 8,
-                  zIndex: 300,
-                  background: "#0d1520", border: `1px solid ${BORDER}`,
-                  borderRadius: 8, padding: "10px 14px", width: 220,
-                  fontSize: 12, color: "#94a3b8", lineHeight: 1.6,
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
-                  pointerEvents: "none",
-                }}>
-                  <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4, fontSize: 12 }}>{item.label}</div>
-                  {item.info}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </nav>
-
-      {/* Bottom utility links */}
-      <div style={{ borderTop: `1px solid ${BORDER}`, padding: "8px 0" }}>
-        {BOTTOM_ITEMS.map(item => {
-          const isActive = activeNav === item.label;
-          return (
-            <Link
-              key={item.label}
-              href={NAV_ROUTES[item.label]}
-              style={{
-                display: "flex", alignItems: "center",
-                padding: "10px 16px", fontSize: 17, fontWeight: 500,
-                color: isActive ? "#fff" : "#94a3b8",
-                background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
-                borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
-                textDecoration: "none", transition: "all 0.15s",
-              }}
-            >{item.label}</Link>
-          );
-        })}
-      </div>
-
-      {/* User row */}
-      <div style={{ padding: "12px 16px", borderTop: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 10 }}>
-        {avatar ? (
-          <img src={avatar} alt="" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-        ) : (
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: avatarColor, flexShrink: 0 }} />
-        )}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
-          <div style={{ fontSize: 13, color: "#64748b" }}>Pro Plan</div>
+              >{item.label}</Link>
+            );
+          })}
         </div>
-        <Link
-          href="/studio/settings"
-          title="Settings"
-          style={{ color: activeNav === "Settings" ? ORANGE : "#64748b", textDecoration: "none", fontSize: 28, lineHeight: 1, display: "flex", alignItems: "center", flexShrink: 0 }}
-        >
-          ⚙
-        </Link>
+
+        {/* User row */}
+        <div style={{ padding: "12px 16px", borderTop: `1px solid ${BORDER}`, display: "flex", alignItems: "center", gap: 10 }}>
+          {avatar ? (
+            <img src={avatar} alt="" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: 34, height: 34, borderRadius: "50%", background: avatarBg, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "#fff" }}>
+              {initials}
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
+            <div style={{ fontSize: 13, color: "#64748b" }}>Pro Plan</div>
+          </div>
+          <Link
+            href="/studio/settings"
+            title="Settings"
+            style={{ color: activeNav === "Settings" ? ORANGE : "#64748b", textDecoration: "none", fontSize: 28, lineHeight: 1, display: "flex", alignItems: "center", flexShrink: 0 }}
+          >
+            ⚙
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

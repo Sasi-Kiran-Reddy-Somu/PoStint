@@ -63,7 +63,6 @@ function AccountTab() {
   const [industry, setIndustry] = useState("Consumer Electronics");
   const [website, setWebsite] = useState("https://blackbrookcase.com");
   const [theme, setTheme] = useState("dark");
-  const [compact, setCompact] = useState(false);
   const [avatar, setAvatarState] = useState("");
   const [animLogo, setAnimLogo] = useState(true);
   const [hue, setHue] = useState(0);
@@ -173,13 +172,6 @@ function AccountTab() {
               </div>
             ))}
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 18px" }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>Compact Mode</div>
-            <div style={{ fontSize: 12, color: MUTED }}>Reduce spacing and padding across the interface</div>
-          </div>
-          <Toggle on={compact} onToggle={() => setCompact(!compact)} />
         </div>
       </div>
     </div>
