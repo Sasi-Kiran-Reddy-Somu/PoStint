@@ -146,6 +146,12 @@ export default function Sidebar({ activeNav }: SidebarProps) {
               position: "relative",
             }}
           >
+            {/* Close button */}
+            <button
+              onClick={() => setOnboarding(false)}
+              style={{ position: "absolute", top: 16, right: 16, background: "transparent", border: "none", color: "#475569", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: 4 }}
+            >×</button>
+
             {/* Step counter */}
             <div style={{ display: "flex", gap: 6, marginBottom: 24, justifyContent: "center" }}>
               {ONBOARDING_STEPS.map((_, i) => (
