@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { label: "Evergreen Opportunities", badge: null, info: "Established Reddit threads ranking high on Google for your keywords. Might be older but still getting traffic." },
   { label: "Create Posts", badge: null, info: null },
   { label: "Brand Mentions", badge: null, info: null },
+  { label: "Notifications", badge: null, info: null },
 ];
 
 const NAV_ROUTES: Record<string, string> = {
@@ -22,6 +23,7 @@ const NAV_ROUTES: Record<string, string> = {
   "Evergreen Opportunities": "/studio/evergreen",
   "Create Posts": "/studio/create-posts",
   "Brand Mentions": "/studio/reddit-mentions",
+  "Notifications": "/studio/notifications",
   "Brand Setup": "/studio/brand-setup",
   "Billing": "/studio/billing",
   "Help Center": "/studio/help-center",
@@ -223,7 +225,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
             >
               <div>
                 <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
-                <div style={{ fontSize: 16, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
               </div>
               <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
             </div>
@@ -235,7 +237,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                     key={p}
                     onClick={() => { setProject(p); setDropdownOpen(false); }}
                     style={{
-                      padding: "10px 12px", fontSize: 16, cursor: "pointer",
+                      padding: "10px 12px", fontSize: 14, cursor: "pointer",
                       color: p === project ? "#fff" : "#94a3b8",
                       background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
                       borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
@@ -262,7 +264,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   href={NAV_ROUTES[item.label]}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
-                    padding: "10px 16px", cursor: "pointer", fontSize: 16, fontWeight: 500,
+                    padding: "10px 16px", cursor: "pointer", fontSize: 14, fontWeight: 500,
                     color: isActive ? "#fff" : "#94a3b8",
                     background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                     borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
@@ -317,7 +319,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                 href={NAV_ROUTES[item.label]}
                 style={{
                   display: "flex", alignItems: "center",
-                  padding: "10px 16px", fontSize: 16, fontWeight: 500,
+                  padding: "10px 16px", fontSize: 14, fontWeight: 500,
                   color: isActive ? "#fff" : "#94a3b8",
                   background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                   borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
