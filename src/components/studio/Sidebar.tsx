@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const ORANGE = "#e85d2f";
 export const SIDEBAR_BG = "#1e2a3b";
@@ -63,19 +63,27 @@ export default function Sidebar({ activeNav }: SidebarProps) {
   const [showGuide, setShowGuide] = useState(false);
   const [username, setUsername] = useState("Sasi Kumar");
   const [avatar, setAvatar] = useState("");
-  const [hue, setHue] = useState(0);
+  const [phase, setPhase] = useState(0);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const animRef = useRef<number | null>(null);
 
   useEffect(() => {
     setUsername(getSidebarUsername());
     setAvatar(getSidebarAvatar());
   }, []);
 
+  // Smooth logo animation: oscillate between brand colors like a Google-style icon
   useEffect(() => {
-    const t = setInterval(() => setHue(h => (h + 1) % 360), 30);
-    return () => clearInterval(t);
+    let start: number | null = null;
+    const tick = (ts: number) => {
+      if (!start) start = ts;
+      setPhase(((ts - start) % 4000) / 4000); // 4s full cycle
+      animRef.current = requestAnimationFrame(tick);
+    };
+    animRef.current = requestAnimationFrame(tick);
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
   }, []);
 
-  // Re-sync when tab becomes visible (user returning from settings)
   useEffect(() => {
     const onFocus = () => {
       setUsername(getSidebarUsername());
@@ -85,12 +93,38 @@ export default function Sidebar({ activeNav }: SidebarProps) {
     return () => window.removeEventListener("focus", onFocus);
   }, []);
 
+  // Interpolate between brand stop colors for a smooth Gmail-style gradient shift
+  const STOPS = [
+    [232, 93, 47],   // orange
+    [99, 102, 241],  // indigo
+    [16, 185, 129],  // emerald
+    [232, 93, 47],   // back to orange
+  ];
+  const logoColor = (() => {
+    const idx = Math.floor(phase * 3);
+    const t = (phase * 3) - idx;
+    const [r1, g1, b1] = STOPS[idx];
+    const [r2, g2, b2] = STOPS[idx + 1];
+    const r = Math.round(r1 + (r2 - r1) * t);
+    const g = Math.round(g1 + (g2 - g1) * t);
+    const b = Math.round(b1 + (b2 - b1) * t);
+    return `rgb(${r},${g},${b})`;
+  })();
+  const avatarColor = (() => {
+    const shifted = (phase + 0.33) % 1;
+    const idx = Math.floor(shifted * 3);
+    const t = (shifted * 3) - idx;
+    const [r1, g1, b1] = STOPS[idx];
+    const [r2, g2, b2] = STOPS[idx + 1];
+    return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
+  })();
+
   return (
     <div style={{ width: 250, background: SIDEBAR_BG, display: "flex", flexDirection: "column", borderRight: `1px solid ${BORDER}`, flexShrink: 0, height: "100vh", position: "sticky", top: 0 }}>
       {/* Logo */}
       <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-          <div style={{ width: 28, height: 28, background: `hsl(${hue}, 85%, 55%)`, borderRadius: 6, flexShrink: 0, transition: "background 0.1s" }} />
+          <div style={{ width: 28, height: 28, background: logoColor, borderRadius: 6, flexShrink: 0 }} />
           <span style={{ fontWeight: 700, fontSize: 15, color: "#fff", flex: 1 }}>Reddit Studio</span>
           <button
             onClick={() => setShowGuide(g => !g)}
@@ -170,8 +204,9 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                 <span style={{ flex: "none" }}>{item.label}</span>
                 {item.info && (
                   <span
-                    onMouseEnter={(e) => { e.preventDefault(); e.stopPropagation(); setTooltip(item.label); }}
-                    onMouseLeave={() => setTooltip(null)}
+                    onMouseEnter={(e) => { e.preventDefault(); e.stopPropagation(); setTooltip(item.label); setTooltipPos({ x: e.clientX, y: e.clientY }); }}
+                    onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
+                    onMouseLeave={() => { setTooltip(null); setTooltipPos(null); }}
                     onClick={(e) => e.preventDefault()}
                     style={{ width: 15, height: 15, borderRadius: "50%", border: `1px solid #334155`, color: "#475569", fontSize: 9, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "default", flexShrink: 0 }}
                   >i</span>
@@ -183,13 +218,17 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   </span>
                 )}
               </Link>
-              {tooltip === item.label && item.info && (
+              {tooltip === item.label && item.info && tooltipPos && (
                 <div style={{
-                  position: "fixed", left: 258, zIndex: 300,
+                  position: "fixed",
+                  left: tooltipPos.x + 14,
+                  top: tooltipPos.y - 8,
+                  zIndex: 300,
                   background: "#0d1520", border: `1px solid ${BORDER}`,
                   borderRadius: 8, padding: "10px 14px", width: 220,
                   fontSize: 12, color: "#94a3b8", lineHeight: 1.6,
                   boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+                  pointerEvents: "none",
                 }}>
                   <div style={{ fontWeight: 700, color: "#fff", marginBottom: 4, fontSize: 12 }}>{item.label}</div>
                   {item.info}
@@ -226,7 +265,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {avatar ? (
           <img src={avatar} alt="" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
         ) : (
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: `hsl(${(hue + 120) % 360}, 70%, 50%)`, flexShrink: 0, transition: "background 0.1s" }} />
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: avatarColor, flexShrink: 0 }} />
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{username}</div>
