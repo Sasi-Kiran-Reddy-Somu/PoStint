@@ -9,11 +9,11 @@ export const BORDER = "#1f2d3d";
 const PROJECTS = ["Blackbrookcase", "Nomad Goods", "Bellroy UK"];
 
 const NAV_ITEMS = [
-  { label: "My Tasks", badge: null, info: "All tasks you've submitted — track status, credits spent, and whether comments are live." },
+  { label: "My Tasks", badge: null, info: null },
   { label: "Live Opportunities", badge: "6", info: "Reddit threads that AI engines are actively citing right now for your tracked prompts along with new posts matching your keywords. Best acted on quickly." },
   { label: "Evergreen Opportunities", badge: null, info: "Established Reddit threads ranking high on Google for your keywords. Might be older but still getting traffic." },
-  { label: "Create Posts", badge: null, info: "Generate brand-new Reddit discussion threads in relevant subreddits to build visibility from scratch." },
-  { label: "Brand Mentions", badge: null, info: "Monitor Reddit for every mention of your brand — join conversations, respond to feedback, and track sentiment." },
+  { label: "Create Posts", badge: null, info: null },
+  { label: "Brand Mentions", badge: null, info: null },
 ];
 
 const NAV_ROUTES: Record<string, string> = {
