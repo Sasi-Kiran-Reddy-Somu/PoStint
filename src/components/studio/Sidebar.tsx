@@ -201,7 +201,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {/* Logo */}
         <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6, flexShrink: 0 }} />
+            <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🧭</div>
             <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
             <button
               onClick={() => { setOnboardStep(0); setOnboarding(true); }}
