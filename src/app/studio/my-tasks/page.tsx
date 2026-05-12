@@ -10,7 +10,7 @@ const MUTED = "#64748b";
 const MUTED2 = "#94a3b8";
 
 type Status = "All" | "Pending" | "Live" | "Failed" | "Refunded" | "Mod Removed" | "Automod Removed" | "Completed";
-type Source = "All" | "Opportunity" | "Mention" | "Post" | "Boost";
+type TaskType = "All" | "Opportunity" | "Mention" | "Post" | "Boost";
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   Live:              { bg: "#14532d",  color: "#4ade80" },
@@ -83,7 +83,7 @@ const TASKS: Task[] = [
 ];
 
 const STATUS_FILTERS: Status[] = ["All", "Pending", "Live", "Failed", "Refunded", "Mod Removed", "Automod Removed"];
-const SOURCE_FILTERS: Source[] = ["All", "Opportunity", "Mention", "Post", "Boost"];
+const TYPE_FILTERS: TaskType[] = ["All", "Opportunity", "Mention", "Post", "Boost"];
 
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS_COLORS[status] ?? { bg: "#1e293b", color: "#94a3b8" };
@@ -110,7 +110,7 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
 
 export default function MyTasksPage() {
   const [statusFilter, setStatusFilter] = useState<Status>("All");
-  const [sourceFilter, setSourceFilter] = useState<Source>("All");
+  const [typeFilter, setTypeFilter] = useState<TaskType>("All");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [boostExpanded, setBoostExpanded] = useState<string | null>(null);
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
@@ -118,7 +118,7 @@ export default function MyTasksPage() {
 
   const filtered = TASKS.filter(t =>
     (statusFilter === "All" || t.status === statusFilter) &&
-    (sourceFilter === "All" || t.source === sourceFilter)
+    (typeFilter === "All" || t.source === typeFilter)
   );
 
   const confirmCancel = (id: string) => {
@@ -138,14 +138,19 @@ export default function MyTasksPage() {
           <p style={{ margin: "0 0 24px", fontSize: 13, color: MUTED }}>Track all placed comments and posts across subreddits.</p>
 
           {/* Filters */}
-          <div style={{ background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "14px 20px", marginBottom: 20 }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-              <span style={{ fontSize: 11, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", alignSelf: "center", marginRight: 4 }}>Status</span>
-              {STATUS_FILTERS.map(f => <FilterChip key={f} label={f} active={statusFilter === f} onClick={() => setStatusFilter(f)} />)}
+          <div style={{ background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 10, padding: "16px 20px", marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 14 }}>
+              <span style={{ fontSize: 11, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", paddingTop: 6, flexShrink: 0, width: 48 }}>Status</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {STATUS_FILTERS.map(f => <FilterChip key={f} label={f} active={statusFilter === f} onClick={() => setStatusFilter(f)} />)}
+              </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <span style={{ fontSize: 11, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", alignSelf: "center", marginRight: 4 }}>Source</span>
-              {SOURCE_FILTERS.map(f => <FilterChip key={f} label={f} active={sourceFilter === f} onClick={() => setSourceFilter(f as Source)} />)}
+            <div style={{ height: 1, background: BORDER, marginBottom: 14 }} />
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+              <span style={{ fontSize: 11, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", paddingTop: 6, flexShrink: 0, width: 48 }}>Type</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {TYPE_FILTERS.map(f => <FilterChip key={f} label={f} active={typeFilter === f} onClick={() => setTypeFilter(f as TaskType)} />)}
+              </div>
             </div>
           </div>
 
@@ -153,7 +158,7 @@ export default function MyTasksPage() {
           <div style={{ background: "#1e2a3b", border: `1px solid ${BORDER}`, borderRadius: 10, overflow: "hidden" }}>
             {/* Header — merged Upvotes+Replies into one Activity column */}
             <div style={{ display: "grid", gridTemplateColumns: "80px 110px 150px 180px 180px 80px 70px 1fr", background: SURFACE2, borderBottom: `1px solid ${BORDER}`, padding: "10px 16px", gap: 8 }}>
-              {["ID", "Source", "Subreddit", "Scheduled", "Status", "Tier", "Credits", "Activity"].map(h => (
+              {["ID", "Type", "Subreddit", "Created", "Status", "Tier", "Credits", "Activity"].map(h => (
                 <div key={h} style={{ fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>{h}</div>
               ))}
             </div>
@@ -198,7 +203,7 @@ export default function MyTasksPage() {
                       </div>
 
                       <div style={{ fontSize: 12, color: MUTED2 }}>{task.tier}</div>
-                      <div style={{ fontSize: 12, color: task.credits > 0 ? TEXT : MUTED }}>{task.credits > 0 ? `${task.credits}cr` : "—"}</div>
+                      <div style={{ fontSize: 12, color: task.credits > 0 ? TEXT : MUTED }}>{task.credits > 0 ? `${task.credits}c` : "—"}</div>
 
                       {/* Activity column */}
                       <div>
@@ -233,10 +238,13 @@ export default function MyTasksPage() {
                             {task.comment}
                           </div>
 
-                          {/* Mod/Automod removed — green "Within 3 days • Credits Refunded ✓" */}
+                          {/* Mod/Automod removed */}
                           {(task.status === "Mod Removed" || task.status === "Automod Removed") && task.removedDate && (
-                            <div style={{ fontSize: 12, color: "#4ade80", marginBottom: 14, fontWeight: 600 }}>
-                              Removed {task.removedDate} · Within 3 days · Credits Refunded ✓
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, background: task.status === "Mod Removed" ? "#450a0a" : "#431407", color: task.status === "Mod Removed" ? "#f87171" : "#fb923c", padding: "2px 8px", borderRadius: 4 }}>
+                                {task.status}
+                              </span>
+                              <span style={{ fontSize: 12, color: "#4ade80", fontWeight: 600 }}>· Refunded ✓</span>
                             </div>
                           )}
 
