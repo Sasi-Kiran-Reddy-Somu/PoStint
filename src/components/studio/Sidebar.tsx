@@ -201,7 +201,12 @@ export default function Sidebar({ activeNav }: SidebarProps) {
         {/* Logo */}
         <div style={{ padding: "20px 16px 12px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 28, height: 28, background: ORANGE, borderRadius: 6, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🧭</div>
+            <div style={{ width: 32, height: 32, background: ORANGE, borderRadius: 7, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#fff" stroke="none"/>
+              </svg>
+            </div>
             <span style={{ fontWeight: 700, fontSize: 16, color: "#fff", flex: 1 }}>Reddit Studio</span>
             <button
               onClick={() => { setOnboardStep(0); setOnboarding(true); }}
@@ -218,7 +223,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
             >
               <div>
                 <div style={{ fontSize: 10, color: "#64748b", marginBottom: 2, letterSpacing: "0.08em" }}>PROJECT</div>
-                <div style={{ fontSize: 17, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: "#e2e8f0" }}>{project}</div>
               </div>
               <span style={{ color: "#64748b", fontSize: 11, transform: dropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
             </div>
@@ -230,7 +235,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                     key={p}
                     onClick={() => { setProject(p); setDropdownOpen(false); }}
                     style={{
-                      padding: "10px 12px", fontSize: 17, cursor: "pointer",
+                      padding: "10px 12px", fontSize: 16, cursor: "pointer",
                       color: p === project ? "#fff" : "#94a3b8",
                       background: p === project ? "rgba(232,93,47,0.15)" : "transparent",
                       borderLeft: `3px solid ${p === project ? ORANGE : "transparent"}`,
@@ -257,7 +262,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                   href={NAV_ROUTES[item.label]}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
-                    padding: "10px 16px", cursor: "pointer", fontSize: 17, fontWeight: 500,
+                    padding: "10px 16px", cursor: "pointer", fontSize: 16, fontWeight: 500,
                     color: isActive ? "#fff" : "#94a3b8",
                     background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                     borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
@@ -312,7 +317,7 @@ export default function Sidebar({ activeNav }: SidebarProps) {
                 href={NAV_ROUTES[item.label]}
                 style={{
                   display: "flex", alignItems: "center",
-                  padding: "10px 16px", fontSize: 17, fontWeight: 500,
+                  padding: "10px 16px", fontSize: 16, fontWeight: 500,
                   color: isActive ? "#fff" : "#94a3b8",
                   background: isActive ? "rgba(232,93,47,0.15)" : "transparent",
                   borderLeft: isActive ? `3px solid ${ORANGE}` : "3px solid transparent",
