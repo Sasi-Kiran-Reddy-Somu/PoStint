@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { PROMPTS, type PromptKey, type PromptTemplate } from "@/lib/prompt-lab/templates";
+import { PROMPTS, type PromptKey } from "@/lib/prompt-lab/templates";
 import { PERSONAS, formatPersonaBlock } from "@/lib/prompt-lab/personalities";
 
 interface RunRecord {
